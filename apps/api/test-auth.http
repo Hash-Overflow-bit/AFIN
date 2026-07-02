@@ -1,0 +1,19 @@
+### 1. Register a New Investor
+POST http://localhost:3001/auth/register
+Content-Type: application/json
+
+{
+  "email": "test.investor@example.com",
+  "password": "SecurePassword123!",
+  "firstName": "John",
+  "lastName": "Doe"
+}
+
+### 2. Login as the Investor
+POST http://localhost:3001/auth/login
+Content-Type: application/json
+
+{
+  "email": "test.investor@example.com",
+  "password": "SecurePassword123!"
+}

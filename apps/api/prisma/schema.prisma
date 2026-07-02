@@ -1,0 +1,283 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id               String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email            String            @unique @db.VarChar(255)
+  passwordHash     String            @map("password_hash") @db.VarChar(255)
+  firstName        String            @map("first_name") @db.VarChar(100)
+  lastName         String            @map("last_name") @db.VarChar(100)
+  phone            String?           @db.VarChar(20)
+  role             String            @default("INVESTOR") @db.VarChar(20)
+  status           String            @default("PENDING") @db.VarChar(20)
+  emailVerified    Boolean?          @default(false) @map("email_verified")
+  createdAt        DateTime?         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime?         @default(now()) @map("updated_at") @db.Timestamptz(6)
+  
+  // Relations
+  investorProfile  InvestorProfile?
+  documents        Document[]
+  createdBonds     Bond[]            @relation("BondsCreatedBy")
+  orders           Order[]           @relation("OrdersPlacedBy")
+  reviewedOrders   Order[]           @relation("OrdersReviewedBy")
+  payments         Payment[]         @relation("PaymentsByInvestor")
+  verifiedPayments Payment[]         @relation("PaymentsVerifiedBy")
+  allocations      Allocation[]      @relation("AllocationsBy")
+  portfolio        PortfolioHolding[]
+  couponPayments   CouponPayment[]
+  activityLogs     ActivityLog[]
+  notifications    Notification[]
+  refreshTokens    RefreshToken[]
+
+  @@index([email], map: "idx_users_email")
+  @@index([role], map: "idx_users_role")
+  @@map("users")
+}
+
+model InvestorProfile {
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId             String    @unique @map("user_id") @db.Uuid
+  dateOfBirth        DateTime? @map("date_of_birth") @db.Date
+  nationality        String?   @db.VarChar(100)
+  taxId              String?   @map("tax_id") @db.VarChar(50)
+  addressLine1       String?   @map("address_line1") @db.VarChar(255)
+  addressLine2       String?   @map("address_line2") @db.VarChar(255)
+  city               String?   @db.VarChar(100)
+  country            String?   @default("Mozambique") @db.VarChar(100)
+  postalCode         String?   @map("postal_code") @db.VarChar(20)
+  kycStatus          String    @default("PENDING") @map("kyc_status") @db.VarChar(20)
+  kycReviewedBy      String?   @map("kyc_reviewed_by") @db.Uuid
+  kycReviewedAt      DateTime? @map("kyc_reviewed_at") @db.Timestamptz(6)
+  kycRejectionReason String?   @map("kyc_rejection_reason")
+  amlStatus          String?   @default("PENDING") @map("aml_status") @db.VarChar(20)
+  createdAt          DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime? @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "idx_investor_profiles_user")
+  @@index([kycStatus], map: "idx_investor_profiles_kyc")
+  @@map("investor_profiles")
+}
+
+model Document {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String    @map("user_id") @db.Uuid
+  documentType String    @map("document_type") @db.VarChar(50)
+  fileName     String    @map("file_name") @db.VarChar(255)
+  filePath     String    @map("file_path") @db.VarChar(500)
+  fileSize     Int?      @map("file_size")
+  mimeType     String?   @map("mime_type") @db.VarChar(100)
+  status       String?   @default("UPLOADED") @db.VarChar(20)
+  uploadedAt   DateTime? @default(now()) @map("uploaded_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "idx_documents_user")
+  @@map("documents")
+}
+
+model Bond {
+  id                   String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                 String    @db.VarChar(200)
+  issuer               String    @default("Republic of Mozambique") @db.VarChar(200)
+  isin                 String?   @db.VarChar(20)
+  country              String?   @default("Mozambique") @db.VarChar(100)
+  currency             String    @default("MZN") @db.VarChar(10)
+  couponRate           Decimal   @map("coupon_rate") @db.Decimal(5, 2)
+  yieldRate            Decimal?  @map("yield_rate") @db.Decimal(5, 2)
+  couponFrequency      String?   @default("SEMI_ANNUAL") @map("coupon_frequency") @db.VarChar(20)
+  faceValue            Decimal   @default(1000) @map("face_value") @db.Decimal(18, 2)
+  minInvestment        Decimal   @map("min_investment") @db.Decimal(18, 2)
+  maxInvestment        Decimal?  @map("max_investment") @db.Decimal(18, 2)
+  totalIssuance        Decimal?  @map("total_issuance") @db.Decimal(18, 2)
+  issueDate            DateTime? @map("issue_date") @db.Date
+  maturityDate         DateTime  @map("maturity_date") @db.Date
+  auctionDate          DateTime? @map("auction_date") @db.Date
+  subscriptionDeadline DateTime? @map("subscription_deadline") @db.Timestamptz(6)
+  status               String    @default("DRAFT") @db.VarChar(20)
+  createdBy            String    @map("created_by") @db.Uuid
+  createdAt            DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime? @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  creator     User               @relation("BondsCreatedBy", fields: [createdBy], references: [id])
+  orders      Order[]
+  allocations Allocation[]
+  portfolio   PortfolioHolding[]
+  coupons     CouponPayment[]
+
+  @@index([status], map: "idx_bonds_status")
+  @@map("bonds")
+}
+
+model Order {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderNumber     String    @unique @map("order_number") @db.VarChar(20)
+  investorId      String    @map("investor_id") @db.Uuid
+  bondId          String    @map("bond_id") @db.Uuid
+  requestedAmount Decimal   @map("requested_amount") @db.Decimal(18, 2)
+  allocatedAmount Decimal?  @map("allocated_amount") @db.Decimal(18, 2)
+  unitsAllocated  Decimal?  @map("units_allocated") @db.Decimal(18, 2)
+  pricePerUnit    Decimal?  @map("price_per_unit") @db.Decimal(18, 2)
+  status          String    @default("PENDING_REVIEW") @db.VarChar(30)
+  rejectionReason String?   @map("rejection_reason")
+  reviewedBy      String?   @map("reviewed_by") @db.Uuid
+  reviewedAt      DateTime? @map("reviewed_at") @db.Timestamptz(6)
+  createdAt       DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime? @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  investor  User               @relation("OrdersPlacedBy", fields: [investorId], references: [id])
+  reviewer  User?              @relation("OrdersReviewedBy", fields: [reviewedBy], references: [id])
+  bond      Bond               @relation(fields: [bondId], references: [id])
+  payments  Payment[]
+  portfolio PortfolioHolding[]
+
+  @@index([investorId], map: "idx_orders_investor")
+  @@index([bondId], map: "idx_orders_bond")
+  @@index([status], map: "idx_orders_status")
+  @@map("orders")
+}
+
+model Payment {
+  id                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  orderId           String    @map("order_id") @db.Uuid
+  investorId        String    @map("investor_id") @db.Uuid
+  amount            Decimal   @db.Decimal(18, 2)
+  currency          String?   @default("MZN") @db.VarChar(10)
+  paymentMethod     String?   @map("payment_method") @db.VarChar(50)
+  receiptFilePath   String?   @map("receipt_file_path") @db.VarChar(500)
+  receiptFileName   String?   @map("receipt_file_name") @db.VarChar(255)
+  referenceNumber   String?   @map("reference_number") @db.VarChar(100)
+  status            String    @default("PENDING") @db.VarChar(20)
+  verifiedBy        String?   @map("verified_by") @db.Uuid
+  verifiedAt        DateTime? @map("verified_at") @db.Timestamptz(6)
+  rejectionReason   String?   @map("rejection_reason")
+  createdAt         DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime? @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  order    Order @relation(fields: [orderId], references: [id])
+  investor User  @relation("PaymentsByInvestor", fields: [investorId], references: [id])
+  verifier User? @relation("PaymentsVerifiedBy", fields: [verifiedBy], references: [id])
+
+  @@index([orderId], map: "idx_payments_order")
+  @@index([investorId], map: "idx_payments_investor")
+  @@map("payments")
+}
+
+model Allocation {
+  id                        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  bondId                    String    @map("bond_id") @db.Uuid
+  totalGovernmentAllocation Decimal   @map("total_government_allocation") @db.Decimal(18, 2)
+  totalInvestorDemand       Decimal   @map("total_investor_demand") @db.Decimal(18, 2)
+  allocationRatio           Decimal?  @map("allocation_ratio") @db.Decimal(8, 6)
+  status                    String?   @default("PENDING") @db.VarChar(20)
+  allocatedBy               String    @map("allocated_by") @db.Uuid
+  allocatedAt               DateTime? @default(now()) @map("allocated_at") @db.Timestamptz(6)
+  notes                     String?
+
+  bond      Bond @relation(fields: [bondId], references: [id])
+  allocator User @relation("AllocationsBy", fields: [allocatedBy], references: [id])
+
+  @@map("allocations")
+}
+
+model PortfolioHolding {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  investorId     String    @map("investor_id") @db.Uuid
+  bondId         String    @map("bond_id") @db.Uuid
+  orderId        String    @map("order_id") @db.Uuid
+  faceValueHeld  Decimal   @map("face_value_held") @db.Decimal(18, 2)
+  purchasePrice  Decimal   @map("purchase_price") @db.Decimal(18, 2)
+  unitsHeld      Decimal   @map("units_held") @db.Decimal(18, 2)
+  status         String?   @default("ACTIVE") @db.VarChar(20)
+  acquiredAt     DateTime? @default(now()) @map("acquired_at") @db.Timestamptz(6)
+
+  investor       User            @relation(fields: [investorId], references: [id])
+  bond           Bond            @relation(fields: [bondId], references: [id])
+  order          Order           @relation(fields: [orderId], references: [id])
+  couponPayments CouponPayment[]
+
+  @@index([investorId], map: "idx_portfolio_investor")
+  @@index([bondId], map: "idx_portfolio_bond")
+  @@map("portfolio_holdings")
+}
+
+model CouponPayment {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  holdingId   String    @map("holding_id") @db.Uuid
+  investorId  String    @map("investor_id") @db.Uuid
+  bondId      String    @map("bond_id") @db.Uuid
+  paymentDate DateTime  @map("payment_date") @db.Date
+  amount      Decimal   @db.Decimal(18, 2)
+  status      String?   @default("SCHEDULED") @db.VarChar(20)
+  paidAt      DateTime? @map("paid_at") @db.Timestamptz(6)
+
+  holding  PortfolioHolding @relation(fields: [holdingId], references: [id])
+  investor User             @relation(fields: [investorId], references: [id])
+  bond     Bond             @relation(fields: [bondId], references: [id])
+
+  @@index([holdingId], map: "idx_coupon_holding")
+  @@map("coupon_payments")
+}
+
+model ActivityLog {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       String?   @map("user_id") @db.Uuid
+  action       String    @db.VarChar(100)
+  resourceType String?   @map("resource_type") @db.VarChar(50)
+  resourceId   String?   @map("resource_id") @db.Uuid
+  details      Json?
+  ipAddress    String?   @map("ip_address") @db.VarChar(45)
+  createdAt    DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "idx_activity_user")
+  @@index([createdAt(sort: Desc)], map: "idx_activity_created")
+  @@map("activity_logs")
+}
+
+model Notification {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  title     String    @db.VarChar(200)
+  message   String
+  type      String?   @db.VarChar(50)
+  isRead    Boolean?  @default(false) @map("is_read")
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, isRead], map: "idx_notifications_user")
+  @@map("notifications")
+}
+
+model SystemSetting {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  key         String    @unique @db.VarChar(100)
+  value       String
+  description String?
+  updatedAt   DateTime? @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@map("system_settings")
+}
+
+model RefreshToken {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  token     String    @unique @db.VarChar(500)
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  createdAt DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token], map: "idx_refresh_token")
+  @@map("refresh_tokens")
+}
