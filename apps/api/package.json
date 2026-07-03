@@ -5,7 +5,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\"",
-    "start": "npx prisma generate && nest start",
+    "start": "npx prisma generate && node dist/main",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "npx prisma generate && node dist/main",
