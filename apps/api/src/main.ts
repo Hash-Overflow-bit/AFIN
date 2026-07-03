@@ -16,11 +16,16 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   // Enable CORS since this is an API
+  const allowedOrigins = process.env.FRONTEND_URL 
+    ? [process.env.FRONTEND_URL, 'http://localhost:3000'] 
+    : ['http://localhost:3000'];
+
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: allowedOrigins,
     credentials: true,
   });
 
-  await app.listen(4000);
+  const port = process.env.PORT || 4000;
+  await app.listen(port);
 }
 bootstrap();
