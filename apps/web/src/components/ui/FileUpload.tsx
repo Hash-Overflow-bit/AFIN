@@ -76,6 +76,7 @@ export function FileUpload({ onUpload, accept = 'application/pdf,image/jpeg,imag
       setSuccess(true);
       setFile(null); // Clear after success
     } catch (err: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const typedErr = err as any;
       setError(typedErr.message || 'An error occurred during upload.');
     } finally {

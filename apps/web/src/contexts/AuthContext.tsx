@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (storedUser && token) {
         try {
           setUser(JSON.parse(storedUser));
-        } catch (_e) {
+        } catch {
           localStorage.removeItem("user");
         }
       }
@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     try {
       await api.post("/auth/logout");
-    } catch (_e) {
+    } catch {
       // Ignore errors on logout
     } finally {
       localStorage.removeItem("user");

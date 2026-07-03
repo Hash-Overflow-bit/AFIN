@@ -60,6 +60,7 @@ export default function InvestorProfilePage() {
       link.click();
       link.remove();
     } catch (error: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const typedErr = error as any;
       console.error('Download failed', typedErr);
       setError(typedErr.response?.data?.message || 'Failed to download document. It may have been removed.');

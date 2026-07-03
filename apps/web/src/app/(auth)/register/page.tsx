@@ -29,6 +29,7 @@ export default function RegisterPage() {
       await api.post("/auth/register", formData);
       setIsSuccess(true);
     } catch (err: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const typedErr = err as any;
       if (Array.isArray(typedErr.response?.data?.message)) {
         setError(typedErr.response.data.message[0]);
