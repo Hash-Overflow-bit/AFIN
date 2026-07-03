@@ -37,3 +37,8 @@ Always consult these blueprints before building major modules:
 - [x] Task 1.4: Login + JWT
 - [x] Task 1.5: RBAC Guards
 - [x] Task 1.6: Frontend Auth Pages + Context
+- [x] Task 1.7: Landing Page & UI Polish
+- [x] Task 2.1: Investor Profile API
+- [x] Task 2.2: Document Upload System
+- [x] Task 2.3: KYC Review Workflow (Broker Side)
+- [ ] Task 3.1: Bond CRUD API

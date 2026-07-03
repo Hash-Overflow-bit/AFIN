@@ -29,12 +29,19 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-6 bg-surface-canvas-dark relative overflow-hidden">
+    <div className="min-h-screen w-full flex items-center justify-center p-6 bg-white relative overflow-hidden">
+      
+      {/* AFIN Logo */}
+      <div className="absolute top-8 left-8 z-20">
+        <h1 className="font-display text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-3xl font-bold tracking-wider">
+          AFIN
+        </h1>
+      </div>
       
       {/* Decorative Starfield Texture - Faint background element */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at center, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
-      <div className="card-spotlight w-full max-w-md relative z-10">
+      <div className="card-night w-full max-w-md relative z-10">
         
         <div className="mb-10 text-center">
           <h1 className="font-display text-[40px] font-bold leading-tight mb-2">

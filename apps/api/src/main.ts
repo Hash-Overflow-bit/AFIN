@@ -12,9 +12,15 @@ async function bootstrap() {
     transform: true,
   }));
 
-  // Enable CORS since this is an API
-  app.enableCors();
+  // Set global prefix to /api
+  app.setGlobalPrefix('api');
 
-  await app.listen(3001);
+  // Enable CORS since this is an API
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  });
+
+  await app.listen(4000);
 }
 bootstrap();
