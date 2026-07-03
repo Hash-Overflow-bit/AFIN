@@ -1,8 +1,0 @@
-node_modules
-dist
-npm-debug.log
-.env
-uploads
-test-*.js
-test-*.mjs
-test-*.http
