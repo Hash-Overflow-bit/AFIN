@@ -12,7 +12,7 @@ import { DatabaseModule } from '../database/database.module';
       dest: './uploads',
     }),
   ],
-  controllers: [InvestorsController, DocumentsController],
+  controllers: [DocumentsController, InvestorsController],
   providers: [InvestorsService],
 })
 export class InvestorsModule {}

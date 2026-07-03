@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Body, Request, UseGuards, Ip, Param } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Body, Request, UseGuards, Ip, Param } from '@nestjs/common';
 import { InvestorsService } from './investors.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -25,6 +25,12 @@ export class InvestorsController {
     @Ip() ipAddress: string,
   ) {
     return this.investorsService.updateProfile(req.user.id, updateProfileDto, ipAddress);
+  }
+
+  @Roles('INVESTOR')
+  @Post('submit-kyc')
+  submitKyc(@Request() req) {
+    return this.investorsService.submitKyc(req.user.id);
   }
 
   // --- Broker Endpoints ---

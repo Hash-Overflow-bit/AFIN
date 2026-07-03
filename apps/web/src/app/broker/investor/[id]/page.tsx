@@ -141,7 +141,14 @@ export default function InvestorReviewPage({ params }: { params: { id: string } 
               {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {documents.map((doc: any) => (
                 <li key={doc.id} className="flex flex-col p-4 border border-hairline-cloud rounded-[8px] bg-surface-canvas">
-                  <span className="font-medium text-[14px] mb-1 truncate" title={doc.fileName}>{doc.fileName}</span>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium text-[14px] truncate pr-2 max-w-[70%]" title={doc.fileName}>{doc.fileName}</span>
+                    <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-surface-press text-ink/75 flex-shrink-0">
+                      {doc.documentType === 'IDENTITY' ? 'Identity' :
+                       doc.documentType === 'TAX_NUMBER' ? 'NUIT' :
+                       doc.documentType === 'ADDRESS' ? 'Address' : doc.documentType}
+                    </span>
+                  </div>
                   <span className="text-[12px] text-ink/60 mb-3">
                     {Math.round(doc.fileSize / 1024)} KB • Uploaded {new Date(doc.uploadedAt).toLocaleDateString()}
                   </span>

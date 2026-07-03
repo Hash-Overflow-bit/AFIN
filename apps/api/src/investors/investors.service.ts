@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 
@@ -99,13 +99,22 @@ export class InvestorsService {
     }
   }
 
-  async uploadDocument(userId: string, file: Express.Multer.File) {
+  async uploadDocument(userId: string, file: Express.Multer.File, documentType?: string) {
     try {
+      const profile = await (this.prisma as any).investorProfile.findUnique({
+        where: { userId },
+        select: { kycStatus: true },
+      });
+
+      if (profile && ['DOCUMENTS_SUBMITTED', 'APPROVED'].includes(profile.kycStatus)) {
+        throw new BadRequestException('Cannot upload documents while KYC is submitted for review or approved.');
+      }
+
       const safeFileName = (file.originalname || 'document').replace(/[^a-zA-Z0-9.\-_]/g, '_');
       const document = await (this.prisma as any).document.create({
         data: {
           userId,
-          documentType: 'IDENTITY', // Default for now
+          documentType: documentType || 'IDENTITY',
           fileName: safeFileName,
           filePath: file.path,
           fileSize: file.size,
@@ -114,44 +123,88 @@ export class InvestorsService {
         },
       });
 
-      // Update KYC status to DOCUMENTS_SUBMITTED if PENDING or PROFILE_COMPLETE
-      const profile = await (this.prisma as any).investorProfile.findUnique({ where: { userId }, include: { user: true } });
-      if (profile && ['PENDING', 'PROFILE_COMPLETE'].includes(profile.kycStatus)) {
-        await (this.prisma as any).investorProfile.update({
-          where: { userId },
-          data: { kycStatus: 'DOCUMENTS_SUBMITTED' },
-        });
-
-        // Create notification for all brokers
-        const brokers = await (this.prisma as any).user.findMany({
-          where: { role: 'BROKER', status: 'ACTIVE' },
-        });
-        
-        if (brokers.length > 0) {
-          await (this.prisma as any).notification.createMany({
-            data: brokers.map(broker => ({
-              userId: broker.id,
-              title: 'New KYC Application',
-              message: `Investor ${profile.user.firstName} ${profile.user.lastName} has submitted documents for KYC review.`,
-              type: 'KYC_SUBMISSION',
-            })),
-          });
-        }
-      }
-
       await (this.prisma as any).activityLog.create({
         data: {
           userId,
           action: 'DOCUMENT_UPLOADED',
           resourceType: 'documents',
           resourceId: document.id,
-          details: JSON.stringify({ fileName: document.fileName, fileSize: document.fileSize }),
+          details: JSON.stringify({ fileName: document.fileName, fileSize: document.fileSize, documentType: document.documentType }),
         },
       });
 
       return document;
     } catch (e) {
       console.error('Error in uploadDocument:', e);
+      throw e;
+    }
+  }
+
+  async submitKyc(userId: string) {
+    try {
+      const profile = await (this.prisma as any).investorProfile.findUnique({
+        where: { userId },
+        include: { user: true },
+      });
+
+      if (!profile) {
+        throw new NotFoundException('Investor profile not found');
+      }
+
+      if (!['PENDING', 'PROFILE_COMPLETE', 'REJECTED'].includes(profile.kycStatus)) {
+        throw new BadRequestException(`Cannot submit KYC application when status is ${profile.kycStatus}`);
+      }
+
+      // Check if they uploaded all three required document types: IDENTITY, TAX_NUMBER, ADDRESS
+      const docs = await (this.prisma as any).document.findMany({
+        where: { userId },
+      });
+
+      const uploadedTypes = new Set(docs.map((d: any) => d.documentType));
+      const requiredTypes = ['IDENTITY', 'TAX_NUMBER', 'ADDRESS'];
+      const missingTypes = requiredTypes.filter(type => !uploadedTypes.has(type));
+
+      if (missingTypes.length > 0) {
+        throw new BadRequestException(
+          `Missing required documents: ${missingTypes.map(t => t === 'IDENTITY' ? 'Proof of Identity' : t === 'TAX_NUMBER' ? 'Proof of Tax Number (NUIT)' : 'Proof of Address').join(', ')}`
+        );
+      }
+
+      // Update KYC status to DOCUMENTS_SUBMITTED
+      const updatedProfile = await (this.prisma as any).investorProfile.update({
+        where: { userId },
+        data: { kycStatus: 'DOCUMENTS_SUBMITTED' },
+      });
+
+      // Create notification for all active brokers
+      const brokers = await (this.prisma as any).user.findMany({
+        where: { role: 'BROKER', status: 'ACTIVE' },
+      });
+      
+      if (brokers.length > 0) {
+        await (this.prisma as any).notification.createMany({
+          data: brokers.map((broker: any) => ({
+            userId: broker.id,
+            title: 'New KYC Application',
+            message: `Investor ${profile.user.firstName} ${profile.user.lastName} has submitted documents for KYC review.`,
+            type: 'KYC_SUBMISSION',
+          })),
+        });
+      }
+
+      await (this.prisma as any).activityLog.create({
+        data: {
+          userId,
+          action: 'KYC_SUBMITTED',
+          resourceType: 'investor_profiles',
+          resourceId: profile.id,
+          details: JSON.stringify({ documentCount: docs.length }),
+        },
+      });
+
+      return updatedProfile;
+    } catch (e) {
+      console.error('Error in submitKyc:', e);
       throw e;
     }
   }

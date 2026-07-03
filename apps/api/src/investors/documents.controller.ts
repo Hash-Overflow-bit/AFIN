@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Param, UseGuards, UseInterceptors, UploadedFile, Request, BadRequestException, NotFoundException, StreamableFile, Res } from '@nestjs/common';
+import { Controller, Post, Get, Param, UseGuards, UseInterceptors, UploadedFile, Request, BadRequestException, NotFoundException, StreamableFile, Res, Body } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
@@ -55,11 +55,15 @@ export class DocumentsController {
       }
     }
   }))
-  async uploadDocument(@Request() req, @UploadedFile() file: Express.Multer.File) {
+  async uploadDocument(
+    @Request() req,
+    @UploadedFile() file: Express.Multer.File,
+    @Body('documentType') documentType?: string
+  ) {
     if (!file) {
       throw new BadRequestException('File is required');
     }
-    return this.investorsService.uploadDocument(req.user.id, file);
+    return this.investorsService.uploadDocument(req.user.id, file, documentType);
   }
 
   @Roles('INVESTOR', 'BROKER', 'ADMIN')
