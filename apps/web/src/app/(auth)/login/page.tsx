@@ -21,8 +21,9 @@ export default function LoginPage() {
     try {
       const response = await api.post("/auth/login", { email, password });
       login(response.data);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Invalid email or password");
+    } catch (err: unknown) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setError((err as any).response?.data?.message || "Invalid email or password");
     } finally {
       setIsLoading(false);
     }
@@ -100,7 +101,7 @@ export default function LoginPage() {
 
         <div className="mt-8 text-center border-t border-hairline-violet pt-6">
           <p className="text-on-dark-muted text-sm">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link href="/register" className="text-on-primary font-bold hover:text-accent-lime transition-colors border-b border-transparent hover:border-accent-lime">
               Request access
             </Link>

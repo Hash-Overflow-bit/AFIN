@@ -6,7 +6,9 @@ import { api } from '@/lib/api';
 import { CheckCircle, Clock, AlertCircle } from 'lucide-react';
 
 export default function InvestorProfilePage() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [profile, setProfile] = useState<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [documents, setDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,9 +59,10 @@ export default function InvestorProfilePage() {
       document.body.appendChild(link);
       link.click();
       link.remove();
-    } catch (error: any) {
-      console.error('Download failed', error);
-      setError(error.response?.data?.message || 'Failed to download document. It may have been removed.');
+    } catch (error: unknown) {
+      const typedErr = error as any;
+      console.error('Download failed', typedErr);
+      setError(typedErr.response?.data?.message || 'Failed to download document. It may have been removed.');
     }
   };
 

@@ -5,6 +5,7 @@ import { api } from '@/lib/api';
 import Link from 'next/link';
 
 export default function BrokerDashboardPage() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [queue, setQueue] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 

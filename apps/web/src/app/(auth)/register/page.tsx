@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { api } from "@/lib/api";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Loader2, CheckCircle2 } from "lucide-react";
 
 export default function RegisterPage() {
@@ -16,7 +15,6 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -30,11 +28,12 @@ export default function RegisterPage() {
     try {
       await api.post("/auth/register", formData);
       setIsSuccess(true);
-    } catch (err: any) {
-      if (Array.isArray(err.response?.data?.message)) {
-        setError(err.response.data.message[0]);
+    } catch (err: unknown) {
+      const typedErr = err as any;
+      if (Array.isArray(typedErr.response?.data?.message)) {
+        setError(typedErr.response.data.message[0]);
       } else {
-        setError(err.response?.data?.message || "Failed to create account");
+        setError(typedErr.response?.data?.message || "Failed to create account");
       }
     } finally {
       setIsLoading(false);

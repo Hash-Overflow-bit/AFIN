@@ -7,6 +7,7 @@ import { CheckCircle, XCircle, Clock, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 export default function InvestorReviewPage({ params }: { params: { id: string } }) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [rejectionReason, setRejectionReason] = useState('');
@@ -15,6 +16,7 @@ export default function InvestorReviewPage({ params }: { params: { id: string } 
 
   useEffect(() => {
     fetchInvestorData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
 
   const fetchInvestorData = async () => {
@@ -136,6 +138,7 @@ export default function InvestorReviewPage({ params }: { params: { id: string } 
             <p className="text-[14px] text-ink/70">No documents uploaded.</p>
           ) : (
             <ul className="space-y-4">
+              {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
               {documents.map((doc: any) => (
                 <li key={doc.id} className="flex flex-col p-4 border border-hairline-cloud rounded-[8px] bg-surface-canvas">
                   <span className="font-medium text-[14px] mb-1 truncate" title={doc.fileName}>{doc.fileName}</span>

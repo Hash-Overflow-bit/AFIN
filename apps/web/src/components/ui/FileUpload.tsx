@@ -55,6 +55,7 @@ export function FileUpload({ onUpload, accept = 'application/pdf,image/jpeg,imag
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       validateAndSetFile(e.dataTransfer.files[0]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accept, maxSizeBytes]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,8 +75,9 @@ export function FileUpload({ onUpload, accept = 'application/pdf,image/jpeg,imag
       await onUpload(file);
       setSuccess(true);
       setFile(null); // Clear after success
-    } catch (err: any) {
-      setError(err.message || 'An error occurred during upload.');
+    } catch (err: unknown) {
+      const typedErr = err as any;
+      setError(typedErr.message || 'An error occurred during upload.');
     } finally {
       setUploading(false);
     }

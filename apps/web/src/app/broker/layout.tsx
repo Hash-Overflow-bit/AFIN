@@ -5,7 +5,7 @@ import React from 'react';
 
 export default function BrokerLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ProtectedRoute allowedRoles={['BROKER', 'ADMIN']}>
+    <ProtectedRoute requiredRoles={['BROKER', 'ADMIN']}>
       <div className="min-h-screen bg-surface-canvas-light text-ink">
         <header className="bg-surface-night text-on-primary px-[24px] py-[16px] shadow-level-1">
           <div className="max-w-[1152px] mx-auto flex items-center justify-between">

@@ -218,7 +218,7 @@ export default function LandingPage() {
               The African Fixed Income Network (AFIN) is a secure, institutional-grade platform designed to connect retail and institutional investors directly with high-yield government bonds in Mozambique.
             </p>
             <p className="text-on-dark-muted text-lg leading-relaxed">
-              We eliminate traditional barriers to entry by providing a transparent, fully digital brokerage experience where you can securely verify your identity, browse active bond issuances, and track your portfolio's performance in real time.
+              We eliminate traditional barriers to entry by providing a transparent, fully digital brokerage experience where you can securely verify your identity, browse active bond issuances, and track your portfolio&apos;s performance in real time.
             </p>
           </ScrollReveal>
           

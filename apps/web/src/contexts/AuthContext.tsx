@@ -17,6 +17,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   login: (data: any) => void;
   logout: () => void;
 }
@@ -37,7 +38,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (storedUser && token) {
         try {
           setUser(JSON.parse(storedUser));
-        } catch (e) {
+        } catch (_e) {
           localStorage.removeItem("user");
         }
       }
@@ -66,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     try {
       await api.post("/auth/logout");
-    } catch (e) {
+    } catch (_e) {
       // Ignore errors on logout
     } finally {
       localStorage.removeItem("user");
