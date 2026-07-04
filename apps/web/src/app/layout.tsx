@@ -3,6 +3,8 @@ import { Rubik } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 
+import { NotificationProvider } from '@/contexts/NotificationContext';
+
 const rubik = Rubik({
   subsets: ["latin"],
   variable: "--font-rubik",
@@ -23,7 +25,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${rubik.variable} font-sans antialiased min-h-screen bg-surface-canvas-dark text-on-primary`}>
         <AuthProvider>
-          {children}
+          <NotificationProvider>
+            {children}
+          </NotificationProvider>
         </AuthProvider>
       </body>
     </html>

@@ -65,11 +65,16 @@ const config: Config = {
         'fade-in-up': {
           '0%': { opacity: '0', transform: 'translateY(20px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'pulse-soft': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.8' },
         }
       },
       animation: {
         marquee: 'marquee 25s linear infinite',
         'fade-in-up': 'fade-in-up 0.8s ease-out forwards',
+        'pulse-soft': 'pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       }
     },
   },

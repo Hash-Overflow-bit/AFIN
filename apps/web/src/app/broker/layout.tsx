@@ -2,6 +2,7 @@
 
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import React from 'react';
+import { NotificationBell } from '@/components/layout/NotificationBell';
 
 export default function BrokerLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -10,10 +11,39 @@ export default function BrokerLayout({ children }: { children: React.ReactNode }
         <header className="bg-surface-night text-on-primary px-[24px] py-[16px] shadow-level-1">
           <div className="max-w-[1152px] mx-auto flex items-center justify-between">
             <h1 className="text-[20px] font-semibold leading-[1.25]">AFIN Broker Portal</h1>
-            <nav className="flex space-x-6">
+            <nav className="flex items-center space-x-6">
               <a href="/broker/dashboard" className="text-[14px] font-medium hover:text-accent-lime transition-colors">
                 KYC Queue
               </a>
+              <a href="/broker/bonds" className="text-[14px] font-medium hover:text-accent-lime transition-colors">
+                Bonds
+              </a>
+              <a href="/broker/orders" className="text-[14px] font-medium hover:text-accent-lime transition-colors">
+                Orders
+              </a>
+              <a href="/broker/payments" className="text-[14px] font-medium hover:text-accent-lime transition-colors">
+                Payments
+              </a>
+              <a href="/broker/allocations" className="text-[14px] font-medium hover:text-accent-lime transition-colors">
+                Allocations
+              </a>
+              <a href="/broker/bonds/create" className="text-[14px] font-medium hover:text-accent-lime transition-colors">
+                Create Bond
+              </a>
+              <NotificationBell />
+              <button 
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    localStorage.removeItem('accessToken');
+                    localStorage.removeItem('refreshToken');
+                    localStorage.removeItem('user');
+                    window.location.href = '/login';
+                  }
+                }}
+                className="text-[14px] font-medium bg-red-600/20 text-red-400 hover:bg-red-600/30 px-4 py-1.5 rounded-full transition-colors"
+              >
+                Logout
+              </button>
             </nav>
           </div>
         </header>
