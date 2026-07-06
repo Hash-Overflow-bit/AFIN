@@ -43,3 +43,6 @@ Always consult these blueprints before building major modules:
 - [x] Task 5.3: Real-Time Notification System
 - [x] Task 6.1: Portfolio API & Dashboard UI
 - [x] Task 6.2: Mock Coupon Payment Engine
+- [x] Task 7.1: Broker Dashboard UI
+- [x] Task 7.2: Reports Module
+- [x] UI Polish: Logo Redesign & Landing Page Enhancements

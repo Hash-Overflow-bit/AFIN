@@ -15,9 +15,14 @@ async function bootstrap() {
   // Set global prefix to /api
   app.setGlobalPrefix('api');
 
-  // Enable CORS since this is an API
+  // Enable CORS explicitly for production and local environments
   app.enableCors({
-    origin: true,
+    origin: [
+      'http://localhost:3000',
+      'https://afin-seven.vercel.app',
+      // Allow preview deployments if any:
+      /\.vercel\.app$/
+    ],
     credentials: true,
   });
 
