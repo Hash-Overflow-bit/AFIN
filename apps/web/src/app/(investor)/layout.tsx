@@ -23,7 +23,7 @@ export default function InvestorLayout({ children }: { children: React.ReactNode
         <header className="bg-[#ffffff] border-b border-[#e5e7eb] px-[24px] py-[16px] sticky top-0 z-40">
           <div className="max-w-[1152px] mx-auto flex items-center justify-between">
             <div className="flex items-center gap-8">
-              <h1 className="text-[20px] font-semibold text-[#1f1633] leading-[1.25]">AFIN Investor</h1>
+              <h1 className="font-logo text-[#1f1633] text-[24px] tracking-wider leading-[1.25]">afin</h1>
               
               <nav className="hidden md:flex gap-1">
                 {navItems.map((item) => {

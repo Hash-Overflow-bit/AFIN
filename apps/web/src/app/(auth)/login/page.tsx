@@ -32,17 +32,19 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-6 bg-white relative overflow-hidden">
-      {/* AFIN Logo */}
-      <div className="absolute top-8 left-8 z-20">
-        <h1 className="font-display text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-3xl font-bold tracking-wider">
-          AFIN
-        </h1>
-      </div>
+    <div className="min-h-screen w-full flex flex-col bg-white relative overflow-hidden">
+      {/* Navbar Header */}
+      <header className="w-full px-8 py-6 flex items-center z-20 relative">
+        <Link href="/">
+          <h1 className="font-logo text-[#1f1633] text-[28px] tracking-wider leading-none">
+            afin
+          </h1>
+        </Link>
+      </header>
 
       {/* Decorative Starfield Texture - Faint background element */}
       <div
-        className="absolute inset-0 opacity-[0.03] pointer-events-none"
+        className="absolute inset-0 opacity-[0.03] pointer-events-none z-0"
         style={{
           backgroundImage:
             "radial-gradient(circle at center, white 1px, transparent 1px)",
@@ -50,7 +52,8 @@ export default function LoginPage() {
         }}
       />
 
-      <div className="card-night w-full max-w-md relative z-10">
+      <main className="flex-1 flex items-center justify-center p-6 z-10 relative">
+        <div className="card-night w-full max-w-md relative">
         <div className="mb-10 text-center">
           <h1 className="font-display text-[40px] font-bold leading-tight mb-2">
             Sign In{" "}
@@ -133,7 +136,8 @@ export default function LoginPage() {
             </Link>
           </p>
         </div>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

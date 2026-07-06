@@ -11,6 +11,7 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-rubik)", "system-ui", "sans-serif"],
         display: ["var(--font-rubik)", "system-ui", "sans-serif"],
+        logo: ["var(--font-logo)", "system-ui", "sans-serif"],
         mono: ["Monaco", "Menlo", "Ubuntu Mono", "monospace"],
       },
       colors: {

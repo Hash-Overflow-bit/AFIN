@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Rubik } from "next/font/google";
+import { Rubik, Quicksand } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 
@@ -9,6 +9,12 @@ const rubik = Rubik({
   subsets: ["latin"],
   variable: "--font-rubik",
   weight: ["400", "500", "600", "700"],
+});
+
+const quicksand = Quicksand({
+  subsets: ["latin"],
+  variable: "--font-logo",
+  weight: ["700"],
 });
 
 export const metadata: Metadata = {
@@ -23,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${rubik.variable} font-sans antialiased min-h-screen bg-surface-canvas-dark text-on-primary`}>
+      <body className={`${rubik.variable} ${quicksand.variable} font-sans antialiased min-h-screen bg-surface-canvas-dark text-on-primary`}>
         <AuthProvider>
           <NotificationProvider>
             {children}

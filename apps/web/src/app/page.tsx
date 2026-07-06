@@ -57,8 +57,8 @@ export default function LandingPage() {
         <div className="flex items-center gap-12">
           {/* Logo */}
           <Link href="/">
-            <h1 className="font-display text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-3xl font-bold tracking-wider">
-              AFIN
+            <h1 className="font-logo text-white text-3xl font-bold tracking-wider">
+              afin
             </h1>
           </Link>
           
@@ -209,32 +209,34 @@ export default function LandingPage() {
       </ScrollReveal>
 
       {/* About Section */}
-      <section id="about" className="w-full py-24 md:py-32 relative z-20 bg-surface-night overflow-hidden">
+      <section id="about" className="w-full py-24 md:py-32 relative z-20 bg-white overflow-hidden text-[#1f1633]">
         <div className="max-w-[1400px] mx-auto px-8 flex flex-col md:flex-row gap-16 items-center">
           <ScrollReveal delay="0.1s" className="w-full md:w-1/2">
-            <h2 className="text-accent-lime font-bold tracking-widest uppercase text-sm mb-4">About AFIN</h2>
-            <h3 className="font-display text-4xl lg:text-5xl font-bold mb-6 leading-tight">Democratizing Access to Sovereign Debt</h3>
-            <p className="text-on-dark-muted text-lg leading-relaxed mb-6">
+            <h2 className="text-accent-violet-deep font-bold tracking-widest uppercase text-sm mb-4">About afin</h2>
+            <h3 className="font-display text-5xl lg:text-6xl font-extrabold mb-6 leading-tight text-[#1f1633]">
+              Democratizing Access to Sovereign Debt
+            </h3>
+            <p className="text-gray-600 text-lg leading-relaxed mb-6">
               The African Fixed Income Network (AFIN) is a secure, institutional-grade platform designed to connect retail and institutional investors directly with high-yield government bonds in Mozambique.
             </p>
-            <p className="text-on-dark-muted text-lg leading-relaxed">
+            <p className="text-gray-600 text-lg leading-relaxed">
               We eliminate traditional barriers to entry by providing a transparent, fully digital brokerage experience where you can securely verify your identity, browse active bond issuances, and track your portfolio&apos;s performance in real time.
             </p>
           </ScrollReveal>
           
           <div className="w-full md:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <ScrollReveal delay="0.3s">
-              <div className="bg-[#1a1325] p-8 rounded-2xl border border-white/5 shadow-level-1 h-full">
-                <Shield className="w-10 h-10 text-accent-violet mb-4" />
-                <h4 className="font-bold text-xl mb-2">Secure & Regulated</h4>
-                <p className="text-on-dark-muted text-sm leading-relaxed">Strict KYC/AML compliance ensuring bank-grade security for all transactions.</p>
+            <ScrollReveal delay="0.3s" className="h-full">
+              <div className="bg-[#f9fafb] p-8 rounded-3xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col justify-center">
+                <Shield className="w-12 h-12 text-accent-violet mb-6" />
+                <h4 className="font-bold text-2xl mb-3 text-[#1f1633]">Secure & Regulated</h4>
+                <p className="text-gray-600 leading-relaxed">Strict KYC/AML compliance ensuring bank-grade security for all transactions.</p>
               </div>
             </ScrollReveal>
-            <ScrollReveal delay="0.5s">
-              <div className="bg-[#1a1325] p-8 rounded-2xl border border-white/5 shadow-level-1 h-full">
-                <TrendingUp className="w-10 h-10 text-accent-lime mb-4" />
-                <h4 className="font-bold text-xl mb-2">High Yield Returns</h4>
-                <p className="text-on-dark-muted text-sm leading-relaxed">Direct access to competitive sovereign debt instruments and reliable coupon payments.</p>
+            <ScrollReveal delay="0.5s" className="h-full">
+              <div className="bg-[#f9fafb] p-8 rounded-3xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col justify-center">
+                <TrendingUp className="w-12 h-12 text-accent-violet-mid mb-6" />
+                <h4 className="font-bold text-2xl mb-3 text-[#1f1633]">High Yield Returns</h4>
+                <p className="text-gray-600 leading-relaxed">Direct access to competitive sovereign debt instruments and reliable coupon payments.</p>
               </div>
             </ScrollReveal>
           </div>
@@ -242,102 +244,141 @@ export default function LandingPage() {
       </section>
 
       {/* How it Works Section */}
-      <section id="how-it-works" className="w-full py-24 md:py-32 relative z-20 bg-[#0a0514]">
+      <section id="how-it-works" className="w-full py-24 md:py-32 relative z-20 bg-[#f9fafb] text-[#1f1633] border-t border-gray-100">
         <div className="max-w-[1400px] mx-auto px-8 text-center">
           <ScrollReveal delay="0.1s">
-            <h2 className="text-accent-pink font-bold tracking-widest uppercase text-sm mb-4">How It Works</h2>
-            <h3 className="font-display text-4xl lg:text-5xl font-bold mb-16 md:mb-24">Start Investing in 3 Simple Steps</h3>
+            <h2 className="text-accent-violet-deep font-bold tracking-widest uppercase text-sm mb-4">How It Works</h2>
+            <h3 className="font-display text-5xl lg:text-6xl font-extrabold mb-16 md:mb-24 text-[#1f1633]">
+              Start Investing in 3 Simple Steps
+            </h3>
           </ScrollReveal>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16 relative">
             {/* Connecting line for desktop */}
-            <ScrollReveal delay="0.4s" className="hidden md:block absolute top-12 left-[15%] right-[15%] h-px bg-gradient-to-r from-accent-violet/10 via-accent-violet to-accent-pink/10" />
+            <ScrollReveal delay="0.4s" className="hidden md:block absolute top-12 left-[15%] right-[15%] h-[2px] bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
             
-            <ScrollReveal delay="0.2s" className="relative flex flex-col items-center">
-              <div className="w-24 h-24 bg-surface-night rounded-full border border-accent-violet flex items-center justify-center z-10 mb-8 shadow-level-2 relative">
+            <ScrollReveal delay="0.2s" className="relative flex flex-col items-center group">
+              <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center z-10 mb-8 shadow-sm group-hover:shadow-md transition-all relative border border-gray-100 group-hover:scale-105 duration-300">
                 <Users className="w-10 h-10 text-accent-violet" />
-                <div className="absolute -top-2 -right-2 w-8 h-8 bg-accent-violet text-white font-bold rounded-full flex items-center justify-center border-4 border-[#0a0514]">1</div>
+                <div className="absolute -top-2 -right-2 w-8 h-8 bg-accent-violet text-white font-bold rounded-full flex items-center justify-center shadow-sm">1</div>
               </div>
               <h4 className="font-bold text-2xl mb-4">Create Profile</h4>
-              <p className="text-on-dark-muted text-center max-w-[280px] leading-relaxed">Register an account and quickly verify your identity using our seamless KYC workflow.</p>
+              <p className="text-gray-600 text-center max-w-[280px] leading-relaxed">Register an account and quickly verify your identity using our seamless KYC workflow.</p>
             </ScrollReveal>
 
-            <ScrollReveal delay="0.4s" className="relative flex flex-col items-center">
-              <div className="w-24 h-24 bg-surface-night rounded-full border border-accent-lime flex items-center justify-center z-10 mb-8 shadow-level-2 relative">
-                <FileText className="w-10 h-10 text-accent-lime" />
-                <div className="absolute -top-2 -right-2 w-8 h-8 bg-accent-lime text-ink-deep font-bold rounded-full flex items-center justify-center border-4 border-[#0a0514]">2</div>
+            <ScrollReveal delay="0.4s" className="relative flex flex-col items-center group">
+              <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center z-10 mb-8 shadow-sm group-hover:shadow-md transition-all relative border border-gray-100 group-hover:scale-105 duration-300">
+                <FileText className="w-10 h-10 text-accent-violet-mid" />
+                <div className="absolute -top-2 -right-2 w-8 h-8 bg-accent-violet-mid text-white font-bold rounded-full flex items-center justify-center shadow-sm">2</div>
               </div>
               <h4 className="font-bold text-2xl mb-4">Browse Bonds</h4>
-              <p className="text-on-dark-muted text-center max-w-[280px] leading-relaxed">Explore open government bond offerings, review yield rates, and place your investment orders.</p>
+              <p className="text-gray-600 text-center max-w-[280px] leading-relaxed">Explore open government bond offerings, review yield rates, and place your investment orders.</p>
             </ScrollReveal>
 
-            <ScrollReveal delay="0.6s" className="relative flex flex-col items-center">
-              <div className="w-24 h-24 bg-surface-night rounded-full border border-accent-pink flex items-center justify-center z-10 mb-8 shadow-level-2 relative">
-                <CheckCircle2 className="w-10 h-10 text-accent-pink" />
-                <div className="absolute -top-2 -right-2 w-8 h-8 bg-accent-pink text-white font-bold rounded-full flex items-center justify-center border-4 border-[#0a0514]">3</div>
+            <ScrollReveal delay="0.6s" className="relative flex flex-col items-center group">
+              <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center z-10 mb-8 shadow-sm group-hover:shadow-md transition-all relative border border-gray-100 group-hover:scale-105 duration-300">
+                <CheckCircle2 className="w-10 h-10 text-accent-violet-deep" />
+                <div className="absolute -top-2 -right-2 w-8 h-8 bg-accent-violet-deep text-white font-bold rounded-full flex items-center justify-center shadow-sm">3</div>
               </div>
               <h4 className="font-bold text-2xl mb-4">Earn Returns</h4>
-              <p className="text-on-dark-muted text-center max-w-[280px] leading-relaxed">Upload payment proof, get your bonds allocated, and track your scheduled coupon payouts.</p>
+              <p className="text-gray-600 text-center max-w-[280px] leading-relaxed">Upload payment proof, get your bonds allocated, and track your scheduled coupon payouts.</p>
             </ScrollReveal>
           </div>
         </div>
       </section>
 
-      {/* Company Section */}
-      <section id="company" className="w-full py-24 md:py-32 relative z-20 bg-surface-canvas-dark border-t border-white/5">
-        <div className="max-w-[1400px] mx-auto px-8 flex flex-col items-center text-center">
-          <ScrollReveal delay="0.1s">
+      {/* Company Section - Pinterest Masonry Layout */}
+      <section id="company" className="w-full py-24 md:py-32 relative z-20 bg-surface-night border-t border-white/5">
+        <div className="max-w-[1400px] mx-auto px-8">
+          <ScrollReveal delay="0.1s" className="text-center mb-16">
             <h2 className="text-accent-violet font-bold tracking-widest uppercase text-sm mb-4">Our Company</h2>
-            <h3 className="font-display text-4xl lg:text-5xl font-bold mb-8">Building the Financial Infrastructure of Tomorrow</h3>
-            <p className="text-on-dark-muted text-lg leading-relaxed max-w-3xl mx-auto mb-16">
+            <h3 className="font-display text-4xl lg:text-5xl font-extrabold mb-6">Building the Financial Infrastructure of Tomorrow</h3>
+            <p className="text-on-dark-muted text-lg leading-relaxed max-w-3xl mx-auto">
               AFIN is backed by a consortium of leading financial technologists, economists, and legal experts dedicated to bridging the gap between national treasuries and everyday investors.
             </p>
           </ScrollReveal>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
-            <ScrollReveal delay="0.2s">
-              <div className="bg-[#150f23] p-8 rounded-2xl border border-white/5 shadow-level-1 h-full flex flex-col items-center text-center">
-                <Globe className="w-10 h-10 text-accent-lime mb-4" />
-                <h4 className="font-bold text-xl mb-2">Global Vision</h4>
-                <p className="text-on-dark-muted text-sm">Expanding digital financial inclusion across the continent.</p>
+          {/* Pinterest-style Masonry Grid */}
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+            <ScrollReveal delay="0.2s" className="break-inside-avoid">
+              <div className="bg-[#1a1325] p-8 rounded-3xl border border-white/5 shadow-level-1 hover:-translate-y-1 transition-transform">
+                <Globe className="w-12 h-12 text-accent-lime mb-6" />
+                <h4 className="font-bold text-2xl mb-3">Global Vision</h4>
+                <p className="text-on-dark-muted leading-relaxed">Expanding digital financial inclusion across the continent and building bridges to international capital markets.</p>
               </div>
             </ScrollReveal>
-            <ScrollReveal delay="0.4s">
-              <div className="bg-[#150f23] p-8 rounded-2xl border border-white/5 shadow-level-1 h-full flex flex-col items-center text-center">
-                <Building2 className="w-10 h-10 text-accent-violet mb-4" />
-                <h4 className="font-bold text-xl mb-2">Institutional Grade</h4>
-                <p className="text-on-dark-muted text-sm">Partnered with top-tier brokers and regulated financial entities.</p>
+            
+            <ScrollReveal delay="0.3s" className="break-inside-avoid">
+              <div className="bg-gradient-to-br from-accent-violet-deep to-[#1a1325] p-8 rounded-3xl border border-white/5 shadow-level-1 hover:-translate-y-1 transition-transform text-center py-16">
+                <Building2 className="w-16 h-16 text-white mb-6 mx-auto opacity-90" />
+                <h4 className="font-bold text-2xl mb-3">Institutional Grade</h4>
+                <p className="text-white/80 leading-relaxed">Partnered with top-tier brokers and regulated financial entities.</p>
               </div>
             </ScrollReveal>
-            <ScrollReveal delay="0.6s">
-              <div className="bg-[#150f23] p-8 rounded-2xl border border-white/5 shadow-level-1 h-full flex flex-col items-center text-center">
-                <Users className="w-10 h-10 text-accent-pink mb-4" />
-                <h4 className="font-bold text-xl mb-2">Dedicated Team</h4>
-                <p className="text-on-dark-muted text-sm">Led by industry veterans with deep expertise in fintech.</p>
+            
+            <ScrollReveal delay="0.4s" className="break-inside-avoid">
+              <div className="bg-[#1a1325] p-8 rounded-3xl border border-white/5 shadow-level-1 hover:-translate-y-1 transition-transform">
+                <Shield className="w-10 h-10 text-accent-pink mb-4" />
+                <h4 className="font-bold text-xl mb-2">Secure & Compliant</h4>
+                <p className="text-on-dark-muted text-sm leading-relaxed">Adhering to the strictest global regulatory standards for your peace of mind.</p>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal delay="0.5s" className="break-inside-avoid">
+              <div className="bg-[#1a1325] p-8 rounded-3xl border border-white/5 shadow-level-1 hover:-translate-y-1 transition-transform py-12">
+                <Users className="w-12 h-12 text-accent-violet mb-6" />
+                <h4 className="font-bold text-2xl mb-3">Dedicated Team</h4>
+                <p className="text-on-dark-muted leading-relaxed">Led by industry veterans with deep expertise in fintech, regulatory compliance, and emerging market debt.</p>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal delay="0.6s" className="break-inside-avoid">
+              <div className="bg-accent-lime p-8 rounded-3xl border border-white/5 shadow-level-1 hover:-translate-y-1 transition-transform text-ink-deep">
+                <TrendingUp className="w-12 h-12 text-[#150f23] mb-6" />
+                <h4 className="font-bold text-2xl mb-3">Fintech Innovation</h4>
+                <p className="text-[#150f23]/80 font-medium leading-relaxed">Pioneering digital-first solutions for modern sovereign debt marketplaces.</p>
+              </div>
+            </ScrollReveal>
+            
+            <ScrollReveal delay="0.7s" className="break-inside-avoid">
+              <div className="bg-[#1a1325] p-8 rounded-3xl border border-white/5 shadow-level-1 hover:-translate-y-1 transition-transform">
+                <Briefcase className="w-10 h-10 text-white mb-4" />
+                <h4 className="font-bold text-xl mb-2">B2B Network</h4>
+                <p className="text-on-dark-muted text-sm leading-relaxed">Empowering brokers with a complete white-label digital infrastructure.</p>
               </div>
             </ScrollReveal>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="w-full bg-[#05020a] py-16 border-t border-white/5 relative z-20">
-        <div className="max-w-[1400px] mx-auto px-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-10 md:gap-8">
-          <div className="flex flex-col gap-3 text-left">
-            <h1 className="font-display text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-2xl font-bold tracking-wider">
-              AFIN
-            </h1>
-            <p className="text-on-dark-muted text-sm">African Fixed Income Network.<br/>Empowering investors in Mozambique.</p>
-          </div>
-          <div className="flex flex-col md:flex-row gap-4 md:gap-8 text-sm text-on-dark-muted w-full md:w-auto">
-            <Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link href="#" className="hover:text-white transition-colors">Terms of Service</Link>
-            <Link href="#" className="hover:text-white transition-colors">Contact Support</Link>
-          </div>
+      {/* Footer - Massive Brand Text Layout */}
+      <footer className="w-full bg-[#05020a] pt-32 pb-8 border-t border-white/5 relative z-20 overflow-hidden">
+        {/* Subtle Radial Gradients for Background Glow */}
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <div className="absolute top-1/2 left-[20%] w-[500px] h-[500px] bg-[#fa7faa]/5 rounded-full blur-[120px] -translate-y-1/2 mix-blend-screen" />
+          <div className="absolute top-1/2 right-[20%] w-[500px] h-[500px] bg-[#6a5fc1]/10 rounded-full blur-[120px] -translate-y-1/2 mix-blend-screen" />
         </div>
-        <div className="max-w-[1400px] mx-auto px-8 mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-start md:items-center text-sm text-on-dark-faint gap-6 md:gap-4">
-          <div>&copy; {new Date().getFullYear()} AFIN - African Fixed Income Network. All rights reserved.</div>
-          <a href="https://www.upwork.com/freelancers/~018cb6b2be97dd2433" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Developed by Hash-overflow</a>
+
+        <div className="max-w-[1400px] mx-auto px-8 relative z-10 flex flex-col items-center">
+          {/* Massive Logo Text */}
+          <div className="w-full flex justify-center mb-24 select-none relative z-20">
+            <h2 className="font-logo font-bold leading-none tracking-tight text-transparent [-webkit-text-stroke:3px_rgba(255,255,255,0.3)] hover:[-webkit-text-stroke:3px_rgba(255,255,255,0.8)] transition-all duration-700 cursor-default" style={{ fontSize: 'clamp(80px, 22vw, 350px)' }}>
+              afin
+            </h2>
+          </div>
+
+          {/* Minimal Bottom Bar */}
+          <div className="w-full flex flex-col md:flex-row justify-between items-center text-[#8e8e8e] text-sm font-medium gap-6">
+            <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center">
+              <span>&copy; {new Date().getFullYear()} AFIN. All rights reserved.</span>
+              <a href="https://www.upwork.com/freelancers/~018cb6b2be97dd2433" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors opacity-50 hover:opacity-100 hidden md:block">Developed by Hash-overflow</a>
+            </div>
+            <div className="flex gap-8">
+              <Link href="#" className="hover:text-white transition-colors">LinkedIn</Link>
+              <Link href="#" className="hover:text-white transition-colors">Facebook</Link>
+              <Link href="#" className="hover:text-white transition-colors">Twitter</Link>
+            </div>
+          </div>
         </div>
       </footer>
     </div>

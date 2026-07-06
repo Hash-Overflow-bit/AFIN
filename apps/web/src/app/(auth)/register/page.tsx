@@ -43,14 +43,17 @@ export default function RegisterPage() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center p-6 bg-white relative">
-        {/* AFIN Logo */}
-        <div className="absolute top-8 left-8 z-20">
-          <h1 className="font-display text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-3xl font-bold tracking-wider">
-            AFIN
-          </h1>
-        </div>
-        <div className="card-night w-full max-w-md text-center">
+      <div className="min-h-screen w-full flex flex-col bg-white relative">
+        {/* Navbar Header */}
+        <header className="w-full px-8 py-6 flex items-center z-20 relative">
+          <Link href="/">
+            <h1 className="font-logo text-[#1f1633] text-[28px] tracking-wider leading-none">
+              afin
+            </h1>
+          </Link>
+        </header>
+        <main className="flex-1 flex items-center justify-center p-6 z-10 relative">
+          <div className="card-night w-full max-w-md text-center">
           <CheckCircle2 className="w-16 h-16 text-accent-lime mx-auto mb-6" />
           <h1 className="font-display text-3xl font-bold mb-4">Account Created</h1>
           <p className="text-on-dark-muted mb-8">
@@ -59,24 +62,28 @@ export default function RegisterPage() {
           <Link href="/login" className="btn-inverted w-full inline-flex">
             Proceed to Login
           </Link>
-        </div>
+          </div>
+        </main>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center p-6 bg-white relative overflow-hidden py-12">
+    <div className="min-h-screen w-full flex flex-col bg-white relative overflow-hidden py-12">
       
-      {/* AFIN Logo */}
-      <div className="absolute top-8 left-8 z-20">
-        <h1 className="font-display text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-3xl font-bold tracking-wider">
-          AFIN
-        </h1>
-      </div>
+      {/* Navbar Header */}
+      <header className="w-full px-8 py-6 flex items-center z-20 relative">
+        <Link href="/">
+          <h1 className="font-logo text-[#1f1633] text-[28px] tracking-wider leading-none">
+            afin
+          </h1>
+        </Link>
+      </header>
 
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at center, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-0" style={{ backgroundImage: 'radial-gradient(circle at center, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
-      <div className="card-night w-full max-w-lg relative z-10">
+      <main className="flex-1 flex items-center justify-center p-6 z-10 relative">
+        <div className="card-night w-full max-w-lg relative">
         
         <div className="mb-10 text-center">
           <h1 className="font-display text-[40px] font-bold leading-tight mb-2">
@@ -128,7 +135,8 @@ export default function RegisterPage() {
           </p>
         </div>
 
-      </div>
+        </div>
+      </main>
     </div>
   );
 }
