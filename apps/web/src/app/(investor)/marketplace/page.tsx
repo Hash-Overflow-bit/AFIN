@@ -74,9 +74,19 @@ export default function MarketplacePage() {
                   <h3 className="text-[20px] font-bold text-[#1f1633] group-hover:text-[#422082] transition-colors line-clamp-2">
                     {bond.name}
                   </h3>
-                  <span className="shrink-0 ml-4 px-[8px] py-[4px] text-[10px] font-bold tracking-[0.25px] uppercase bg-emerald-50 text-emerald-700 rounded-[4px] border border-emerald-200">
-                    OPEN
-                  </span>
+                  {bond.status === 'OPEN' ? (
+                    <span className="shrink-0 ml-4 px-[8px] py-[4px] text-[10px] font-bold tracking-[0.25px] uppercase bg-emerald-50 text-emerald-700 rounded-[4px] border border-emerald-200">
+                      OPEN
+                    </span>
+                  ) : bond.status === 'ALLOCATED' ? (
+                    <span className="shrink-0 ml-4 px-[8px] py-[4px] text-[10px] font-bold tracking-[0.25px] uppercase bg-amber-50 text-amber-700 rounded-[4px] border border-amber-200">
+                      SOLD OUT
+                    </span>
+                  ) : (
+                    <span className="shrink-0 ml-4 px-[8px] py-[4px] text-[10px] font-bold tracking-[0.25px] uppercase bg-gray-100 text-gray-700 rounded-[4px] border border-gray-300">
+                      CLOSED
+                    </span>
+                  )}
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4 mb-8">

@@ -97,8 +97,8 @@ export default function BrokerOrdersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f9fafb] text-[#1f1633] p-4 md:p-8 font-sans">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="space-y-8 pb-12 max-w-[1152px] mx-auto">
+      <div className="space-y-8">
         
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
@@ -169,7 +169,7 @@ export default function BrokerOrdersPage() {
                             <button
                               onClick={() => handleApprove(order.id)}
                               disabled={actioningId === order.id}
-                              className="px-3 py-1.5 bg-[#150f23] text-white rounded-[4px] text-[12px] font-bold uppercase tracking-wider hover:bg-[#1a1a1a] transition-colors disabled:opacity-50"
+                              className="px-3 py-1.5 bg-[#6a5fc1] text-white rounded-[4px] text-[12px] font-bold uppercase tracking-wider hover:bg-[#422082] transition-colors disabled:opacity-50 shadow-sm"
                             >
                               Approve
                             </button>

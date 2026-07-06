@@ -126,8 +126,8 @@ export default function InvestorOrdersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f9fafb] text-[#1f1633] p-4 md:p-8 font-sans">
-      <div className="max-w-6xl mx-auto space-y-8">
+    <div className="space-y-8 pb-12 max-w-[1152px] mx-auto">
+      <div className="space-y-8">
         
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
@@ -152,7 +152,7 @@ export default function InvestorOrdersPage() {
             <p className="text-[#79628c] mb-6">You haven't placed any investment orders yet.</p>
             <Link 
               href="/marketplace" 
-              className="inline-block px-[16px] py-[12px] bg-[#150f23] text-white rounded-[8px] font-bold text-[14px] tracking-[0.2px] uppercase hover:bg-[#efefef] hover:text-[#1a1a1a] transition-colors"
+              className="inline-block px-[16px] py-[12px] bg-[#6a5fc1] text-white rounded-[8px] font-bold text-[14px] tracking-[0.2px] uppercase hover:bg-[#422082] transition-colors shadow-sm"
             >
               Browse Marketplace
             </Link>
@@ -269,7 +269,7 @@ export default function InvestorOrdersPage() {
             <button
               onClick={handleUploadPayment}
               disabled={!paymentFile || uploadingPayment}
-              className="w-full py-3 bg-[#150f23] text-white rounded-lg font-bold uppercase tracking-wider disabled:opacity-50 hover:bg-[#efefef] hover:text-[#1f1633] transition-colors"
+              className="w-full py-3 bg-[#6a5fc1] text-white rounded-lg font-bold uppercase tracking-wider disabled:opacity-50 hover:bg-[#422082] shadow-sm transition-colors"
             >
               {uploadingPayment ? 'Uploading...' : 'Submit Payment Proof'}
             </button>

@@ -5,7 +5,7 @@ import { Bell, Check, Clock } from 'lucide-react';
 import { useNotifications } from '@/contexts/NotificationContext';
 import { formatDistanceToNow } from 'date-fns';
 
-export function NotificationBell() {
+export function NotificationBell({ theme = 'light' }: { theme?: 'light' | 'dark' }) {
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -31,7 +31,11 @@ export function NotificationBell() {
     <div className="relative" ref={dropdownRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-full hover:bg-surface-press-light transition-colors text-ink/70 hover:text-ink focus:outline-none focus:ring-2 focus:ring-accent-violet"
+        className={`relative p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-accent-violet ${
+          theme === 'dark' 
+            ? 'text-white/80 hover:text-white hover:bg-white/10' 
+            : 'text-ink/70 hover:text-ink hover:bg-surface-press-light'
+        }`}
         aria-label="Notifications"
       >
         <Bell size={20} />

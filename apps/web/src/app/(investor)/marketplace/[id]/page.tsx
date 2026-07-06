@@ -102,9 +102,19 @@ export default function BondDetailPage({ params }: { params: { id: string } }) {
                   <h1 className="text-[30px] font-bold text-[#1f1633] mb-2 leading-tight">{bond.name}</h1>
                   <p className="text-[#79628c] font-medium">{bond.issuer}</p>
                 </div>
-                <span className="px-3 py-1 text-[10px] font-bold tracking-wider uppercase bg-emerald-50 text-emerald-700 rounded-[4px] border border-emerald-200 flex items-center gap-1">
-                  <CheckCircle2 size={12}/> OPEN
-                </span>
+                {bond.status === 'OPEN' ? (
+                  <span className="px-3 py-1 text-[10px] font-bold tracking-wider uppercase bg-emerald-50 text-emerald-700 rounded-[4px] border border-emerald-200 flex items-center gap-1">
+                    <CheckCircle2 size={12}/> OPEN
+                  </span>
+                ) : bond.status === 'ALLOCATED' ? (
+                  <span className="px-3 py-1 text-[10px] font-bold tracking-wider uppercase bg-amber-50 text-amber-700 rounded-[4px] border border-amber-200 flex items-center gap-1">
+                    SOLD OUT
+                  </span>
+                ) : (
+                  <span className="px-3 py-1 text-[10px] font-bold tracking-wider uppercase bg-gray-100 text-gray-700 rounded-[4px] border border-gray-300 flex items-center gap-1">
+                    CLOSED
+                  </span>
+                )}
               </div>
               
               <div className="prose max-w-none text-[#1f1633] leading-relaxed">
@@ -160,14 +170,14 @@ export default function BondDetailPage({ params }: { params: { id: string } }) {
               </div>
 
               <button
-                disabled={kycStatus !== 'APPROVED'}
+                disabled={kycStatus !== 'APPROVED' || bond.status !== 'OPEN'}
                 onClick={() => setIsModalOpen(true)}
                 className="w-full py-[12px] px-[16px] rounded-[8px] font-bold text-[14px] tracking-[0.2px] uppercase transition-all duration-200
                   disabled:bg-[#362d59] disabled:text-[#cfcfdb] disabled:cursor-not-allowed
-                  bg-white text-[#1f1633] hover:bg-[#f0f0f0] active:bg-[#efefef] shadow-[rgba(0,0,0,0.08)_0_2px_8px_0]
+                  bg-[#6a5fc1] text-white hover:bg-[#422082] shadow-[rgba(0,0,0,0.08)_0_2px_8px_0]
                 "
               >
-                {kycStatus === 'APPROVED' ? 'Invest Now' : 'KYC Required'}
+                {bond.status !== 'OPEN' ? 'NOT AVAILABLE' : kycStatus === 'APPROVED' ? 'Invest Now' : 'KYC Required'}
               </button>
               
               {kycStatus === 'APPROVED' && (
@@ -245,7 +255,7 @@ export default function BondDetailPage({ params }: { params: { id: string } }) {
                 <button
                   type="submit"
                   disabled={isSubmitting || !amount}
-                  className="flex-1 py-[12px] px-[16px] rounded-[8px] font-bold text-[14px] uppercase tracking-[0.2px] bg-[#150f23] text-white hover:bg-[#efefef] hover:text-[#1a1a1a] transition-colors disabled:opacity-50"
+                  className="flex-1 py-[12px] px-[16px] rounded-[8px] font-bold text-[14px] uppercase tracking-[0.2px] bg-[#6a5fc1] text-white hover:bg-[#422082] transition-colors disabled:opacity-50"
                 >
                   {isSubmitting ? 'Submitting...' : 'Confirm'}
                 </button>

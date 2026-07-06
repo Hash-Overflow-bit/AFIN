@@ -15,6 +15,9 @@ export default function BrokerLayout({ children }: { children: React.ReactNode }
               <a href="/broker/dashboard" className="text-[14px] font-medium hover:text-accent-lime transition-colors">
                 KYC Queue
               </a>
+              <a href="/broker/bonds/create" className="text-[14px] font-medium hover:text-accent-lime transition-colors">
+                Create Bond
+              </a>
               <a href="/broker/bonds" className="text-[14px] font-medium hover:text-accent-lime transition-colors">
                 Bonds
               </a>
@@ -27,10 +30,10 @@ export default function BrokerLayout({ children }: { children: React.ReactNode }
               <a href="/broker/allocations" className="text-[14px] font-medium hover:text-accent-lime transition-colors">
                 Allocations
               </a>
-              <a href="/broker/bonds/create" className="text-[14px] font-medium hover:text-accent-lime transition-colors">
-                Create Bond
+              <a href="/broker/reports" className="text-[14px] font-medium hover:text-accent-lime transition-colors">
+                Reports
               </a>
-              <NotificationBell />
+              <NotificationBell theme="dark" />
               <button 
                 onClick={() => {
                   if (typeof window !== 'undefined') {

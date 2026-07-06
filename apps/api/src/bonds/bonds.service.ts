@@ -24,9 +24,9 @@ export class BondsService {
 
     const where: any = {};
     
-    // Investor can only see OPEN bonds
+    // Investor can see all bonds except DRAFT
     if (userRole === 'INVESTOR') {
-      where.status = 'OPEN';
+      where.status = { not: 'DRAFT' };
     } else if (status) {
       where.status = status;
     }
@@ -63,7 +63,7 @@ export class BondsService {
       throw new NotFoundException(`Bond with ID ${id} not found`);
     }
 
-    if (userRole === 'INVESTOR' && bond.status !== 'OPEN') {
+    if (userRole === 'INVESTOR' && bond.status === 'DRAFT') {
       throw new NotFoundException(`Bond with ID ${id} not found`);
     }
 

@@ -11,6 +11,9 @@ interface User {
   lastName: string;
   role: string;
   status: string;
+  investorProfile?: {
+    kycStatus: string;
+  };
 }
 
 interface AuthContextType {
@@ -56,7 +59,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     // Redirect based on role
     if (data.user.role === 'INVESTOR') {
-      router.push("/profile");
+      const kycStatus = data.user.investorProfile?.kycStatus;
+      if (!kycStatus || ['PENDING', 'PROFILE_COMPLETE', 'REJECTED'].includes(kycStatus)) {
+        router.push("/profile");
+      } else {
+        // If APPROVED or DOCUMENTS_SUBMITTED, send to portfolio
+        router.push("/portfolio");
+      }
     } else if (data.user.role === 'BROKER') {
       router.push("/broker/dashboard");
     } else {

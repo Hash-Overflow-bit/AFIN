@@ -24,6 +24,10 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     if (!user) return;
     try {
       const data = await notificationsApi.getNotifications();
+      if (!Array.isArray(data)) {
+        console.warn('Expected notifications to be an array, but received:', data);
+        return;
+      }
       const currentUnread = data.filter((n: Notification) => !n.isRead);
       
       // If we already had notifications, and the new unread count is higher,

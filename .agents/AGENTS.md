@@ -31,14 +31,15 @@ Always consult these blueprints before building major modules:
 - `docs/AFIN_Enhanced_Workflow_Guide.md` - Architectural patterns and RBAC definitions.
 
 ## 4. Progress Tracking
-- [x] Task 1.1: Scaffolding
-- [x] Task 1.2: Database Schema
-- [x] Task 1.3: User Registration API (NestJS, Bcrypt)
-- [x] Task 1.4: Login + JWT
-- [x] Task 1.5: RBAC Guards
-- [x] Task 1.6: Frontend Auth Pages + Context
-- [x] Task 1.7: Landing Page & UI Polish
-- [x] Task 2.1: Investor Profile API
-- [x] Task 2.2: Document Upload System
-- [x] Task 2.3: KYC Review Workflow (Broker Side)
-- [ ] Task 3.1: Bond CRUD API
+- [x] Task 1.1 - 1.7: Scaffolding & Auth
+- [x] Task 2.1 - 2.3: Investor Profile & KYC
+- [x] Task 3.1: Bond CRUD API
+- [x] Task 3.2: Bond Issuance UI (Broker)
+- [x] Task 3.3: Marketplace UI (Investor)
+- [x] Task 4.1: Order Submission API
+- [x] Task 4.2: Order Management UI
+- [x] Task 5.1: Payment Receipt Upload & Verification
+- [x] Task 5.2: Pro-Rata Allocation Engine & Broker UI
+- [x] Task 5.3: Real-Time Notification System
+- [x] Task 6.1: Portfolio API & Dashboard UI
+- [x] Task 6.2: Mock Coupon Payment Engine

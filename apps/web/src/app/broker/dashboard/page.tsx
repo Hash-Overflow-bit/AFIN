@@ -2,89 +2,112 @@
 
 import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import Link from 'next/link';
+import { KPICard } from '@/components/dashboard/KPICard';
+import { VolumeChart } from '@/components/dashboard/VolumeChart';
+import { OrderStatusChart } from '@/components/dashboard/OrderStatusChart';
+import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
+import { Users, FileText, BarChart3, Banknote, ShieldAlert, Loader2 } from 'lucide-react';
+// import { ProtectedRoute } from '@/components/auth/ProtectedRoute'; // Assuming this exists
 
 export default function BrokerDashboardPage() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [queue, setQueue] = useState<any[]>([]);
+  const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchQueue();
+    const fetchDashboard = async () => {
+      try {
+        const response = await api.get('/reports/dashboard');
+        setData(response.data);
+      } catch (err) {
+        console.error('Error fetching dashboard:', err);
+        setError('Failed to load dashboard data. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboard();
   }, []);
 
-  const fetchQueue = async () => {
-    try {
-      const response = await api.get('/investors/kyc-queue');
-      setQueue(response.data);
-    } catch (error) {
-      console.error('Failed to fetch KYC queue', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   if (loading) {
-    return <div className="text-ink">Loading KYC queue...</div>;
+    return (
+      <div className="flex h-[60vh] items-center justify-center">
+        <Loader2 className="w-8 h-8 text-[#6a5fc1] animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="flex h-[80vh] items-center justify-center px-4">
+        <div className="bg-white border border-rose-200 rounded-2xl p-8 max-w-md w-full text-center shadow-lg">
+          <ShieldAlert className="w-12 h-12 text-rose-500 mx-auto mb-4" />
+          <h3 className="text-[#1f1633] font-semibold text-lg mb-2">Access Error</h3>
+          <p className="text-[#79628c] text-sm">{error || 'Dashboard data is unavailable.'}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="w-full">
-      <h2 className="text-[30px] font-medium text-ink leading-[1.2] mb-8">KYC Verification Queue</h2>
-      
-      <div className="bg-surface-canvas-light border border-hairline-cloud rounded-[12px] overflow-hidden">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-surface-press-light border-b border-hairline-cloud">
-              <th className="py-4 px-6 font-semibold text-[14px] text-ink/70">Investor</th>
-              <th className="py-4 px-6 font-semibold text-[14px] text-ink/70">Email</th>
-              <th className="py-4 px-6 font-semibold text-[14px] text-ink/70">Status</th>
-              <th className="py-4 px-6 font-semibold text-[14px] text-ink/70">Submitted</th>
-              <th className="py-4 px-6 font-semibold text-[14px] text-ink/70 text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {queue.length === 0 ? (
-              <tr>
-                <td colSpan={5} className="py-8 text-center text-[14px] text-ink/70">
-                  No pending KYC applications.
-                </td>
-              </tr>
-            ) : (
-              queue.map((profile) => (
-                <tr key={profile.id} className="border-b border-hairline-cloud hover:bg-surface-press-light transition-colors">
-                  <td className="py-4 px-6 text-[16px] font-medium text-ink">
-                    {profile.user.firstName} {profile.user.lastName}
-                  </td>
-                  <td className="py-4 px-6 text-[14px] text-ink/70">
-                    {profile.user.email}
-                  </td>
-                  <td className="py-4 px-6">
-                    <span className={`px-2 py-1 rounded-[4px] text-[12px] font-bold ${
-                      profile.kycStatus === 'DOCUMENTS_SUBMITTED' 
-                        ? 'bg-accent-violet/20 text-accent-violet-deep' 
-                        : 'bg-surface-press text-ink'
-                    }`}>
-                      {profile.kycStatus.replace('_', ' ')}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6 text-[14px] text-ink/70">
-                    {new Date(profile.updatedAt).toLocaleDateString()}
-                  </td>
-                  <td className="py-4 px-6 text-right">
-                    <Link 
-                      href={`/broker/investor/${profile.user.id}`}
-                      className="inline-block px-4 py-2 bg-surface-night text-on-primary rounded-[8px] font-medium text-[14px] hover:bg-surface-night/90 transition-colors"
-                    >
-                      Review
-                    </Link>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+    // <ProtectedRoute allowedRoles={['BROKER_MANAGER', 'BROKER_ANALYST', 'ADMIN']}>
+      <div className="space-y-8 pb-12 max-w-[1152px] mx-auto">
+        
+        {/* Header */}
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-[#1f1633] leading-tight">
+            Broker Dashboard
+          </h1>
+          <p className="text-[#79628c] mt-2 text-sm">
+            Platform overview and quantitative analytics.
+          </p>
+        </div>
+
+        {/* KPI Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <KPICard 
+            title="Total AUM" 
+            value={data.kpis.totalAUM} 
+            icon={Banknote} 
+            suffix=" MZN"
+            tooltip="Total Assets Under Management across all active portfolio holdings."
+          />
+          <KPICard 
+            title="Total Investors" 
+            value={data.kpis.totalInvestors} 
+            icon={Users} 
+            tooltip="Number of verified investor accounts registered on the platform."
+          />
+          <KPICard 
+            title="Active Offerings" 
+            value={data.kpis.activeBonds} 
+            icon={FileText} 
+            tooltip="Number of bonds currently open for subscription."
+          />
+          <KPICard 
+            title="Orders Processed" 
+            value={data.kpis.totalOrders} 
+            icon={BarChart3} 
+            tooltip="Total number of orders submitted across the platform's lifetime."
+          />
+        </div>
+
+        {/* Charts and Feed */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 flex flex-col gap-6">
+            <div className="flex-1">
+              <VolumeChart data={data.volumeChart} />
+            </div>
+            <div className="flex-1">
+              <OrderStatusChart data={data.orderStatusBreakdown} />
+            </div>
+          </div>
+          <div className="lg:col-span-1 h-[850px]">
+            <ActivityFeed activities={data.activityFeed} />
+          </div>
+        </div>
       </div>
-    </div>
+    // </ProtectedRoute>
   );
 }

@@ -112,16 +112,16 @@ export default function InvestorProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f9fafb] flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#150f23]"></div>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#6a5fc1]"></div>
       </div>
     );
   }
 
   if (fetchError) {
     return (
-      <div className="min-h-screen bg-[#f9fafb] p-8 text-[#1f1633] font-sans">
-        <div className="max-w-4xl mx-auto">
+      <div className="space-y-8 pb-12 max-w-[1152px] mx-auto">
+        <div className="max-w-3xl mx-auto">
           <div className="bg-red-50 text-red-700 p-6 rounded-xl border border-red-200">
             <h3 className="font-bold text-[18px] mb-2 flex items-center gap-2"><AlertCircle /> Critical Error Loading Profile</h3>
             <p className="mb-4">The backend API failed to return your profile data. The exact error is:</p>
@@ -133,8 +133,8 @@ export default function InvestorProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f9fafb] text-[#1f1633] p-4 md:p-8 font-sans">
-      <div className="max-w-4xl mx-auto space-y-8">
+    <div className="space-y-8 pb-12 max-w-[1152px] mx-auto">
+      <div className="max-w-3xl mx-auto space-y-8">
         
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
@@ -347,7 +347,7 @@ export default function InvestorProfilePage() {
               disabled={!profile || !allUploaded || submittingKyc || ['DOCUMENTS_SUBMITTED', 'APPROVED'].includes(profile?.kycStatus)}
               className="w-full md:w-auto md:min-w-[280px] py-[14px] px-[24px] rounded-[8px] font-bold text-[14px] uppercase tracking-[0.2px] transition-all duration-200
                 disabled:bg-[#f0f0f0] disabled:text-[#79628c] disabled:border-[#e5e7eb] disabled:cursor-not-allowed
-                bg-[#150f23] text-white hover:bg-[#efefef] hover:text-[#1a1a1a] shadow-[rgba(0,0,0,0.08)_0_2px_8px_0]"
+                bg-[#6a5fc1] text-white hover:bg-[#422082] shadow-sm"
             >
               {submittingKyc ? 'Submitting...' : 
                ['DOCUMENTS_SUBMITTED', 'APPROVED'].includes(profile?.kycStatus) ? 'Submitted' : 

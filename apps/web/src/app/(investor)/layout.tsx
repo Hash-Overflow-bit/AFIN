@@ -13,6 +13,7 @@ export default function InvestorLayout({ children }: { children: React.ReactNode
 
   const navItems = [
     { name: 'Marketplace', path: '/marketplace' },
+    { name: 'Portfolio', path: '/portfolio' },
     { name: 'My Orders', path: '/orders' },
   ];
 
