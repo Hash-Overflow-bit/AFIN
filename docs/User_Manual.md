@@ -1,186 +1,144 @@
-# AFIN Platform - User Manual (Phase 1)
+# AFIN Platform - User Manual (Phase 1 MVP)
 
-Welcome to the African Fixed Income Network (AFIN) Digital Exchange Platform. This manual explains how the core features of the platform work, up to the Order Placement phase.
+Welcome to the African Fixed Income Network (AFIN) Digital Exchange Platform. This manual explains the roles, workflows, and inter-dependencies of the platform through Day 8 (Admin Panel & Security Hardening).
 
-## 1. System Roles
+---
 
-The platform currently operates with two primary user roles, each with distinct permissions and responsibilities.
+## 1. System Roles & Responsibilities
+
+The platform operates with three distinct user roles. Each role has specific responsibilities that work together to ensure a secure, transparent, and fair bond exchange.
+
+```mermaid
+graph TD
+    A[Admin] -->|Configures & Audits| B[Broker]
+    B -->|Reviews & Approves| C[Investor]
+    C -->|Invests In| B
+```
 
 ### 👤 The Investor
-An individual or institutional user looking to purchase government bonds.
-* **Capabilities:** Register, upload KYC documents, browse available bonds in the marketplace, and place investment orders.
-* **Restrictions:** Cannot invest until KYC is explicitly approved by a Broker.
+The primary customer looking to purchase government bonds.
+* **Responsibilities:**
+  * Complete onboarding profile (Date of Birth, NUIT, Address).
+  * Upload identification and tax documents for verification.
+  * Browse active government bond offerings in the marketplace.
+  * Submit investment orders and cancel pending orders.
+  * Upload bank transfer payment receipts for approved orders.
+  * Monitor personal portfolios, coupon schedules, and transaction histories.
 
 ### 🏢 The Broker
-The licensed financial intermediary managing the exchange.
-* **Capabilities:** Review and approve/reject investor KYC applications, create and publish new bonds, and approve/reject incoming investment orders.
+The financial intermediary who manages the bond lifecycle and verifies transactions.
+* **Responsibilities:**
+  * Review and approve/reject investor onboarding and KYC documentation.
+  * Design, publish, and close government bond offerings.
+  * Review and approve/reject investor orders (moving them to "Awaiting Payment").
+  * Verify bank transfer payment receipts uploaded by investors.
+  * Run the Pro-Rata Allocation Engine to fairly distribute bonds.
+  * Monitor platform KPIs (AUM, volume, active users) and export reports.
+
+### ⚙️ The Admin
+The system administrator who manages platform settings, users, and security.
+* **Responsibilities:**
+  * Manage users (create, edit, suspend, or reactivate accounts across all roles).
+  * Revoke active sessions (refresh tokens) of suspended users immediately.
+  * Edit dynamic system settings (e.g. maintenance mode, global investment caps).
+  * Inspect the Activity Log to audit all user actions on the platform.
 
 ---
 
-## 2. Feature Workflows
+## 2. How the Roles Depend on Each Other
 
-### 2.1 Onboarding & KYC (Know Your Customer)
-Before an investor can participate in the marketplace, they must prove their identity.
+To ensure maximum financial safety, no single role can complete the investment cycle alone. The roles depend on each other at every step:
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Investor
+    actor Admin
     actor Broker
-    participant System
-
-    Investor->>System: 1. Registers Account
-    Investor->>System: 2. Completes Profile (DOB, NUIT, Address)
-    Investor->>System: 3. Uploads Documents (Identity, Tax, Address)
-    System->>Broker: Notifies Broker of Pending KYC
-    Broker->>System: 4. Reviews Documents
-    
-    alt Documents are Valid
-        Broker->>System: Approves KYC
-        System->>Investor: Status becomes "Verified"
-    else Documents are Invalid
-        Broker->>System: Rejects KYC (with reason)
-        System->>Investor: Status becomes "Action Required"
-    end
-```
-
-### 2.2 Bond Creation & Marketplace
-Brokers are responsible for setting up the bonds that investors will see.
-
-```mermaid
-stateDiagram-v2
-    [*] --> DRAFT: Broker creates bond
-    
-    DRAFT --> OPEN: Broker publishes bond
-    
-    state OPEN {
-        [*] --> VisibleToInvestors
-        VisibleToInvestors --> InvestorsCanPlaceOrders
-    }
-    
-    OPEN --> CLOSED: Subscription Deadline Reached
-    CLOSED --> [*]
-```
-
-**How it works:**
-1. The **Broker** creates a Bond in `DRAFT` status, specifying the Yield, Face Value, Minimum Investment, and Dates.
-2. The **Broker** clicks "Publish", moving the bond to `OPEN` status.
-3. The **Investor** visits the Marketplace. They will only see bonds that are `OPEN`.
-
----
-
-### 2.3 The Order System
-Once an investor is verified and a bond is open, the investment process begins.
-
-```mermaid
-sequenceDiagram
-    autonumber
     actor Investor
-    actor Broker
-    participant System
-
-    Investor->>System: Browses "Open" Bonds
-    Investor->>System: Enters investment amount & Submits Order
     
-    note over System: System validates: Is Investor KYC Approved?<br/>Is Bond Open?<br/>Is Amount >= Minimum?
+    Note over Admin, Investor: 1. Onboarding Dependency
+    Investor->>Broker: Submits KYC Documents
+    Broker->>Investor: Reviews & Approves Investor (Unlocks Marketplace)
     
-    System->>Broker: Order appears in Broker Queue (PENDING)
+    Note over Admin, Investor: 2. Issuance Dependency
+    Broker->>Investor: Publishes Bond Offering (Open status)
+    Investor->>Broker: Submits Order (Pending Review)
+    Broker->>Investor: Approves Order (Awaiting Payment)
+    Investor->>Broker: Wire transfer & Uploads Receipt (Pending Verification)
+    Broker->>Investor: Verifies Payment (Payment Verified)
     
-    Broker->>System: Reviews Order
+    Note over Admin, Investor: 3. Allocation Dependency
+    Broker->>Investor: Runs Allocation Engine (Creates Holdings & Coupon schedules)
+    Investor->>Investor: Views Portfolio Dashboard
     
-    alt Order Accepted
-        Broker->>System: Approves Order
-        System->>Investor: Order Status -> "Awaiting Payment"
-    else Order Rejected
-        Broker->>System: Rejects Order (with reason)
-        System->>Investor: Order Status -> "Rejected"
-    end
+    Note over Admin, Investor: 4. Administration Dependency
+    Admin->>Broker: Adjusts system settings / caps
+    Admin->>Investor: Suspend/Deactivate user if violation occurs
 ```
 
-### Order Status Lifecycle
-* **PENDING_REVIEW**: The investor has submitted the order, and it is waiting for the broker to look at it.
-* **REJECTED**: The broker declined the order (e.g., suspected fraud or invalid details).
-* **CANCELLED**: The investor cancelled their own order before the broker reviewed it.
-* **AWAITING_PAYMENT**: The broker approved the order. The next step will require the investor to wire the money and upload a receipt.
+1. **Onboarding Dependency:** The Investor cannot view or buy bonds until the Broker reviews and verifies their KYC documents.
+2. **Issuance Dependency:** The Investor cannot place orders unless the Broker publishes an active bond. The Investor cannot pay for a bond until the Broker reviews and approves their order.
+3. **Allocation Dependency:** The Investor's portfolio cannot be funded and coupon schedules cannot be generated until the Broker runs the Allocation Engine.
+4. **Administration Dependency:** Both the Broker and Investor operate under the rules and security bounds configured by the Admin (e.g., maximum global order amounts and security rate limits).
 
 ---
 
-### 2.4 Payments & Verification
-After an order is approved by the broker, the investor must transfer the funds outside of the platform (e.g., via Bank Transfer) and upload the proof of payment.
+## 3. Core Feature Workflows
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Investor
-    actor Broker
-    participant System
+### 3.1 Onboarding & KYC
+Before an investor can buy bonds, they must complete their profile and upload identity proof.
 
-    note over Investor,System: Order Status: AWAITING_PAYMENT
-    Investor->>System: Uploads Bank Receipt PDF/Image
-    System->>Broker: Order appears in Payments Queue
-    Broker->>System: Reviews the uploaded receipt
-    
-    alt Payment is Valid
-        Broker->>System: Verifies Payment
-        System->>Investor: Status -> "PAYMENT_VERIFIED"
-    else Payment is Invalid
-        Broker->>System: Rejects Payment
-        System->>Investor: Status -> "AWAITING_PAYMENT" (Requires re-upload)
-    end
-```
+* **Investor Steps:**
+  1. Register an account and log in.
+  2. Navigate to the profile page and fill out required details (NUIT tax ID, DOB, Address).
+  3. Upload clear copies of ID, NUIT, and utility bill.
+* **Broker Steps:**
+  1. Open the KYC Queue.
+  2. Inspect documents.
+  3. Click **Approve** (activates investor account) or **Reject** (with a reason, prompting the investor to re-upload).
 
----
+### 3.2 Bond Lifecycle & Marketplace
+Bonds follow a structured status flow managed exclusively by the Broker:
 
-### 2.5 The Pro-Rata Allocation Engine
-When the subscription period for a bond ends, the Broker must allocate the bonds to the investors. If the bond is "oversubscribed" (demand exceeds supply), the system automatically uses a **Pro-Rata** algorithm to fairly distribute the bonds.
+$$\text{DRAFT} \longrightarrow \text{OPEN} \longrightarrow \text{CLOSED} \longrightarrow \text{ALLOCATED} \longrightarrow \text{SETTLED}$$
 
-```mermaid
-stateDiagram-v2
-    [*] --> CalculateDemand
-    
-    CalculateDemand --> Oversubscribed: Demand > Supply
-    CalculateDemand --> FullySubscribed: Demand <= Supply
-    
-    Oversubscribed --> ApplyRatio: Ratio = Supply / Demand
-    ApplyRatio --> FloorToFaceValue: Round down to nearest bond unit
-    
-    FullySubscribed --> FullAllocation: Ratio = 100%
-    
-    FloorToFaceValue --> CreateHoldings
-    FullAllocation --> CreateHoldings
-    
-    CreateHoldings --> GenerateCoupons: System schedules future payouts
-    GenerateCoupons --> [*]: Allocation Complete
-```
+* **Draft:** The Broker edits bond parameters (coupon rate, face value, maturity date).
+* **Open:** The Broker publishes the bond. It is now visible to all KYC-approved investors in the marketplace.
+* **Closed:** The subscription deadline passes, preventing new orders.
+* **Allocated:** The Broker runs the allocation engine, distributing bonds to portfolios.
 
-**How it works:**
-1. The **Broker** clicks "Run Allocation" on a closed bond.
-2. The **System** calculates total verified demand vs the total issuance supply.
-3. If demand exceeds supply, everyone gets a proportional slice (e.g., if demand is 2x supply, everyone gets 50% of what they asked for).
-4. The system automatically creates **Portfolio Holdings** for the investors.
-5. The system automatically schedules all future **Mock Coupon Payments** based on the bond's interest rate and frequency.
+### 3.3 The Order & Payment Workflow
+When an investor decides to invest, the order goes through the following lifecycle:
+
+1. **Order Submission:** Investor enters an amount and submits the order. The system validates that the investor is verified, the bond is open, and the amount satisfies min/max rules. (Status: `PENDING_REVIEW`)
+2. **Order Review:** Broker reviews the order and approves it. (Status: `AWAITING_PAYMENT`)
+3. **Payment Receipt:** Investor transfers the funds to the Broker's bank account and uploads the transfer receipt. (Status: `PAYMENT_VERIFIED` once verified by the Broker)
+4. **Cancellation:** Investors can cancel their own order at any time before the broker approves it.
+
+### 3.4 Pro-Rata Allocation Engine
+When a bond closes, it is often oversubscribed (more demand than supply). The system ensures fairness:
+* **Algorithm:** If total demand is greater than bond supply, it calculates a proportional ratio (e.g., `0.5` if demand is double the supply).
+* **Application:** Every investor gets their requested amount multiplied by the ratio (rounded down to the nearest bond unit).
+* **Payout Generation:** The system automatically builds a scheduled list of **Coupon Payments** (interest payouts) for the investor's active portfolio.
 
 ---
 
-### 2.6 Real-Time Notifications
-The platform includes a real-time notification bell to keep investors and brokers informed without needing to refresh the page.
+## 4. Dashboards & Analytics
 
-* **Investors** receive notifications when:
-  * Their KYC is Approved or Rejected.
-  * Their Order is Approved or Rejected.
-  * Their Payment is Verified.
-  * Bonds are successfully allocated to their portfolio.
-* **Brokers** receive notifications when:
-  * New KYC applications are submitted.
-  * New Orders are placed.
-  * New Payments are uploaded.
+### 📊 Investor Portfolio
+Investors have a personal dashboard showing:
+* **Summary metrics:** Total invested capital, current valuation, and average yield.
+* **Active Holdings:** List of all allocated bonds currently held.
+* **Coupon Schedule:** Calendar of all future interest payments (and history of paid coupons).
+* **Activity Logs:** Chronological log of personal actions.
 
----
+### 📈 Broker Dashboard & Reports
+Brokers have access to platform-wide statistics:
+* **KPI Metrics:** Total Assets Under Management (AUM), total verified investors, and total active bond offerings.
+* **Data Export:** Generate and download detailed CSV reports for users, orders, active offerings, and total AUM.
 
-## Summary of Completed Capabilities (Through Phase 5)
-As of this phase, the system successfully guarantees that:
-1. **Security**: Unverified users cannot place orders.
-2. **Integrity**: Investors cannot order more or less than the bond's strict limits.
-3. **Oversight**: Brokers have total manual control over who gets verified, whose orders get approved, and whose payments are legitimate.
-4. **Fairness**: The Allocation Engine strictly enforces mathematical pro-rata distribution to prevent manual bias during oversubscription.
-5. **Transparency**: Real-time notifications keep all parties instantly informed of state changes.
+### 🛡️ Admin Dashboard & Security Control
+Admins can manage platform states and safety:
+* **User Management:** View all accounts, create new operators, and toggle status (Active / Suspended). Suspending an account immediately terminates active sessions for security.
+* **Settings Management:** Dynamically toggle features (e.g. `PLATFORM_MAINTENANCE_MODE` or adjust `MAX_INVESTMENT_LIMIT_GLOBAL`).
+* **Audit Trails:** Browse the system-wide activity log to trace who did what and when.
