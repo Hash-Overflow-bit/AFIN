@@ -3,8 +3,19 @@
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import React from 'react';
 import { NotificationBell } from '@/components/layout/NotificationBell';
+import { usePathname } from 'next/navigation';
 
 export default function BrokerLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
+  if (pathname === '/broker/onboarding') {
+    return (
+      <ProtectedRoute requiredRoles={['BROKER']}>
+        {children}
+      </ProtectedRoute>
+    );
+  }
+
   return (
     <ProtectedRoute requiredRoles={['BROKER', 'ADMIN']}>
       <div className="min-h-screen bg-surface-canvas-light text-ink">

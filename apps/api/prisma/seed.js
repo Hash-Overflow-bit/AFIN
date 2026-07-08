@@ -55,6 +55,21 @@ async function main() {
     },
   });
 
+  // Default Settings
+  const settings = [
+    { key: 'PLATFORM_MAINTENANCE_MODE', value: 'false', description: 'Enable/disable maintenance mode' },
+    { key: 'MAX_INVESTMENT_LIMIT_GLOBAL', value: '50000000', description: 'Global maximum investment limit per order (MZN)' },
+    { key: 'KYC_AUTO_APPROVAL_MOCK', value: 'false', description: 'Auto-approves KYC on upload for testing purposes' }
+  ];
+
+  for (const setting of settings) {
+    await prisma.systemSetting.upsert({
+      where: { key: setting.key },
+      update: {},
+      create: setting
+    });
+  }
+
   console.log('Demo accounts created/verified:');
   console.log('ADMIN: admin@afin.com / Password123!');
   console.log('BROKER: broker@afin.com / Password123!');

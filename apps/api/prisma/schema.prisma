@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/@prisma/client"
 }
 
 datasource db {
@@ -20,6 +21,8 @@ model User {
   emailVerified    Boolean?           @default(false) @map("email_verified")
   createdAt        DateTime?          @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime?          @default(now()) @map("updated_at") @db.Timestamptz(6)
+  companyName      String?            @map("company_name") @db.VarChar(150)
+  licenseNumber    String?            @map("license_number") @db.VarChar(100)
   activityLogs     ActivityLog[]
   allocations      Allocation[]       @relation("AllocationsBy")
   createdBonds     Bond[]             @relation("BondsCreatedBy")

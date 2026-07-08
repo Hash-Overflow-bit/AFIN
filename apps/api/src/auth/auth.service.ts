@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ConflictException, InternalServerErrorException, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../database/prisma.service';
 import { RegisterDto } from './dto/register.dto';
@@ -13,7 +13,14 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const { email, password, firstName, lastName } = registerDto;
+    const { email, password, firstName, lastName, role, companyName, licenseNumber } = registerDto;
+
+    // Security check: public registrations cannot designate ADMIN roles
+    if (role && role !== 'INVESTOR' && role !== 'BROKER') {
+      throw new BadRequestException('Invalid registration role designation');
+    }
+
+    const registrationRole = role || 'INVESTOR';
 
     // Check if user exists
     const existingUser = await this.prisma.user.findUnique({
@@ -29,7 +36,6 @@ export class AuthService {
     const passwordHash = await bcrypt.hash(password, salt);
 
     try {
-      // Create User and Investor Profile within a transaction
       const newUser = await this.prisma.$transaction(async (prisma) => {
         const user = await prisma.user.create({
           data: {
@@ -37,18 +43,23 @@ export class AuthService {
             passwordHash,
             firstName,
             lastName,
-            role: 'INVESTOR', // Default role per MVP
+            role: registrationRole,
             status: 'PENDING',
+            companyName: registrationRole === 'BROKER' ? companyName : null,
+            licenseNumber: registrationRole === 'BROKER' ? licenseNumber : null,
           },
         });
 
-        await prisma.investorProfile.create({
-          data: {
-            userId: user.id,
-            kycStatus: 'PENDING',
-            country: 'Mozambique',
-          },
-        });
+        // Only create an InvestorProfile if the role is INVESTOR
+        if (registrationRole === 'INVESTOR') {
+          await prisma.investorProfile.create({
+            data: {
+              userId: user.id,
+              kycStatus: 'PENDING',
+              country: 'Mozambique',
+            },
+          });
+        }
 
         return user;
       });
@@ -75,6 +86,11 @@ export class AuthService {
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
+    }
+
+    // Security Hardening: Block suspended users from logging in
+    if (user.status === 'SUSPENDED') {
+      throw new UnauthorizedException('Your account is currently suspended. Please contact system support.');
     }
 
     // Compare passwords

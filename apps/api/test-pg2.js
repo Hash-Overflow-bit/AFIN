@@ -1,19 +1,19 @@
 const { Client } = require('pg');
 
 async function testConnection() {
-  console.log('Testing with pg client using explicit config...');
+  console.log('Testing with pooled connection on 6543...');
   const client = new Client({
-    host: 'aws-0-ap-northeast-1.pooler.supabase.com',
+    host: 'db.ikfbycederuqhursbnrk.supabase.co',
     port: 6543,
     user: 'postgres.ikfbycederuqhursbnrk',
-    password: 'zlV3kgDcok9BlaAe',
+    password: 'jNxFvXMwOo0oxiwz',
     database: 'postgres',
     ssl: { rejectUnauthorized: false }
   });
 
   try {
     await client.connect();
-    console.log('Connected successfully!');
+    console.log('Connected successfully to pooled DB!');
     const res = await client.query('SELECT NOW()');
     console.log('Current time from DB:', res.rows[0]);
   } catch (err) {

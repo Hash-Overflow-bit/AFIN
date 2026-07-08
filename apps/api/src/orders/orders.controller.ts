@@ -1,4 +1,5 @@
 import { Controller, Post, Get, Patch, Body, Param, Request, UseGuards, Query } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -11,6 +12,7 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Roles('INVESTOR')
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @Post()
   create(@Body() createOrderDto: CreateOrderDto, @Request() req: any) {
     return this.ordersService.create(createOrderDto, req.user.id);

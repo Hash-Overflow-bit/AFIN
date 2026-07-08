@@ -11,6 +11,8 @@ interface User {
   lastName: string;
   role: string;
   status: string;
+  companyName?: string;
+  licenseNumber?: string;
   investorProfile?: {
     kycStatus: string;
   };
@@ -67,9 +69,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         router.push("/portfolio");
       }
     } else if (data.user.role === 'BROKER') {
-      router.push("/broker/dashboard");
+      if (data.user.status === 'PENDING') {
+        router.push("/broker/onboarding");
+      } else {
+        router.push("/broker/dashboard");
+      }
     } else {
-      router.push("/dashboard");
+      router.push("/admin/dashboard");
     }
   };
 

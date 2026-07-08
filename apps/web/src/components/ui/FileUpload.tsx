@@ -7,9 +7,10 @@ interface FileUploadProps {
   onFileSelect: (file: File) => void;
   accept?: string;
   maxSizeMB?: number;
+  theme?: 'light' | 'dark';
 }
 
-export function FileUpload({ onFileSelect, accept = 'application/pdf,image/jpeg,image/png', maxSizeMB = 10 }: FileUploadProps) {
+export function FileUpload({ onFileSelect, accept = 'application/pdf,image/jpeg,image/png', maxSizeMB = 10, theme = 'light' }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -66,8 +67,10 @@ export function FileUpload({ onFileSelect, accept = 'application/pdf,image/jpeg,
       <div
         className={`relative flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-xl transition-colors duration-200 ease-in-out ${
           isDragging
-            ? 'border-accent-violet-mid bg-surface-press-light'
-            : 'border-hairline-cool bg-surface-canvas-light hover:border-accent-violet-mid hover:bg-surface-press-light'
+            ? (theme === 'dark' ? 'border-red-500 bg-red-500/5' : 'border-accent-violet-mid bg-surface-press-light')
+            : (theme === 'dark'
+                ? 'border-white/10 bg-white/[0.02] hover:border-white/30 hover:bg-white/[0.04]'
+                : 'border-hairline-cool bg-surface-canvas-light hover:border-accent-violet-mid hover:bg-surface-press-light')
         }`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -80,25 +83,37 @@ export function FileUpload({ onFileSelect, accept = 'application/pdf,image/jpeg,
           onChange={handleChange}
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
         />
-        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-surface-press-stronger text-ink mb-4">
+        <div className={`flex items-center justify-center w-12 h-12 rounded-full mb-4 ${
+          theme === 'dark' ? 'bg-white/5 text-white' : 'bg-surface-press-stronger text-ink'
+        }`}>
           <Upload size={24} />
         </div>
-        <p className="text-[16px] font-semibold text-ink leading-[1.5] mb-2">
+        <p className={`text-[16px] font-semibold leading-[1.5] mb-2 ${
+          theme === 'dark' ? 'text-white' : 'text-ink'
+        }`}>
           Drag & drop your document here
         </p>
-        <p className="text-[14px] font-normal text-ink/70 leading-[1.43]">
+        <p className={`text-[14px] font-normal leading-[1.43] ${
+          theme === 'dark' ? 'text-slate-400' : 'text-ink/70'
+        }`}>
           or click to browse from your computer
         </p>
-        <div className="flex gap-2 mt-4 text-[10px] font-semibold text-ink uppercase tracking-[0.25px] leading-[1.8]">
-          <span className="px-2 py-1 rounded-[4px] bg-surface-press-stronger">PDF</span>
-          <span className="px-2 py-1 rounded-[4px] bg-surface-press-stronger">JPEG</span>
-          <span className="px-2 py-1 rounded-[4px] bg-surface-press-stronger">PNG</span>
-          <span className="px-2 py-1 rounded-[4px] bg-surface-press-stronger">MAX {maxSizeMB}MB</span>
+        <div className={`flex gap-2 mt-4 text-[10px] font-semibold uppercase tracking-[0.25px] leading-[1.8] ${
+          theme === 'dark' ? 'text-slate-400' : 'text-ink'
+        }`}>
+          <span className={`px-2 py-1 rounded-[4px] ${theme === 'dark' ? 'bg-white/5' : 'bg-surface-press-stronger'}`}>PDF</span>
+          <span className={`px-2 py-1 rounded-[4px] ${theme === 'dark' ? 'bg-white/5' : 'bg-surface-press-stronger'}`}>JPEG</span>
+          <span className={`px-2 py-1 rounded-[4px] ${theme === 'dark' ? 'bg-white/5' : 'bg-surface-press-stronger'}`}>PNG</span>
+          <span className={`px-2 py-1 rounded-[4px] ${theme === 'dark' ? 'bg-white/5' : 'bg-surface-press-stronger'}`}>MAX {maxSizeMB}MB</span>
         </div>
       </div>
 
       {error && (
-        <div className="mt-4 p-3 bg-red-50 text-red-700 text-[16px] font-medium rounded-[6px] border border-red-200">
+        <div className={`mt-4 p-3 text-[14px] font-medium rounded-[6px] border ${
+          theme === 'dark'
+            ? 'bg-red-950/20 text-red-400 border-red-500/30'
+            : 'bg-red-50 text-red-700 border-red-200'
+        }`}>
           {error}
         </div>
       )}

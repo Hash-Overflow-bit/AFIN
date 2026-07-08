@@ -1,6 +1,6 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, IsOptional, IsIn } from 'class-validator';
 
-export class RegisterDto {
+export class CreateUserAdminDto {
   @IsEmail({}, { message: 'Please provide a valid email address' })
   @IsNotEmpty()
   email: string;
@@ -20,7 +20,12 @@ export class RegisterDto {
 
   @IsString()
   @IsOptional()
-  role?: string;
+  phone?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsIn(['INVESTOR', 'BROKER', 'ADMIN'], { message: 'Role must be INVESTOR, BROKER, or ADMIN' })
+  role: string;
 
   @IsString()
   @IsOptional()

@@ -32,11 +32,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-white relative overflow-hidden">
+    <div className="min-h-screen w-full flex flex-col bg-[#0a0514] relative overflow-hidden text-on-primary">
       {/* Navbar Header */}
       <header className="w-full px-8 py-6 flex items-center z-20 relative">
         <Link href="/">
-          <h1 className="font-logo text-[#1f1633] text-[28px] tracking-wider leading-none">
+          <h1 className="font-logo text-white text-[28px] tracking-wider leading-none">
             afin
           </h1>
         </Link>
@@ -53,7 +53,7 @@ export default function LoginPage() {
       />
 
       <main className="flex-1 flex items-center justify-center p-6 z-10 relative">
-        <div className="card-night w-full max-w-md relative">
+        <div className="card-night w-full max-w-md relative bg-surface-night/65 border border-hairline-violet/20 p-10 rounded-2xl">
         <div className="mb-10 text-center">
           <h1 className="font-display text-[40px] font-bold leading-tight mb-2">
             Sign In{" "}
@@ -67,7 +67,7 @@ export default function LoginPage() {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-surface-night border border-hairline-violet rounded-md text-accent-pink font-mono text-sm shadow-level-1">
+          <div className="mb-6 p-4 bg-red-950/20 border border-red-500/30 rounded-md text-red-400 font-mono text-xs shadow-level-1">
             <span className="font-bold uppercase tracking-console">Error:</span>{" "}
             {error}
           </div>
@@ -75,13 +75,13 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label className="input-label text-on-primary" htmlFor="email">
+            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wide mb-1.5" htmlFor="email">
               Email Address
             </label>
             <input
               id="email"
               type="email"
-              className="input-text w-full"
+              className="w-full p-2.5 rounded-lg bg-white/5 border border-white/10 outline-none focus:border-white text-white placeholder-white/30 text-sm font-medium transition-all"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -91,13 +91,13 @@ export default function LoginPage() {
 
           <div>
             <label
-              className="input-label text-on-primary flex justify-between"
+              className="block text-xs font-semibold text-slate-300 uppercase tracking-wide mb-1.5 flex justify-between"
               htmlFor="password"
             >
               <span>Password</span>
               <a
                 href="#"
-                className="text-accent-violet hover:text-accent-lime transition-colors text-sm font-normal"
+                className="text-accent-violet hover:text-accent-lime transition-colors text-xs font-normal"
               >
                 Forgot?
               </a>
@@ -105,7 +105,7 @@ export default function LoginPage() {
             <input
               id="password"
               type="password"
-              className="input-text w-full"
+              className="w-full p-2.5 rounded-lg bg-white/5 border border-white/10 outline-none focus:border-white text-white placeholder-white/30 text-sm font-medium transition-all"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

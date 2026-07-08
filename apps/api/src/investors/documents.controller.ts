@@ -20,7 +20,7 @@ if (!existsSync(UPLOADS_DIR)) {
 export class DocumentsController {
   constructor(private readonly investorsService: InvestorsService) {}
 
-  @Roles('INVESTOR')
+  @Roles('INVESTOR', 'BROKER')
   @Post()
   @UseInterceptors(FileInterceptor('file', {
     storage: diskStorage({

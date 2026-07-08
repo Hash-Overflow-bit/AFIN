@@ -16,7 +16,17 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       throw new Error('DIRECT_URL or DATABASE_URL is required to initialize pg-boss');
     }
 
-    this.boss = new PgBoss(connectionString);
+    const url = new URL(connectionString);
+    this.boss = new PgBoss({
+      host: url.hostname,
+      port: url.port ? parseInt(url.port, 10) : 5432,
+      user: decodeURIComponent(url.username),
+      password: decodeURIComponent(url.password),
+      database: url.pathname.substring(1),
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    });
 
     this.boss.on('error', (error) => {
       this.logger.error('pg-boss error:', error);
