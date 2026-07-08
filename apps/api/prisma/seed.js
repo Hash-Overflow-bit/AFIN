@@ -5,17 +5,21 @@ const prisma = new PrismaClient();
 
 async function main() {
   const salt = await bcrypt.genSalt(10);
-  const passwordHash = await bcrypt.hash('Password123!', salt);
+
+  // Secure production passwords
+  const adminHash = await bcrypt.hash('AfiN#9xP@7zD!4qK', salt);
+  const brokerHash = await bcrypt.hash('BrkR*2yM^8wB!5tX', salt);
+  const investorHash = await bcrypt.hash('InvS%6hF$3vC#9nJ', salt);
 
   // Demo Admin
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@afin.com' },
+    where: { email: 'admin@afin.mz' },
     update: {},
     create: {
-      email: 'admin@afin.com',
+      email: 'admin@afin.mz',
       firstName: 'Admin',
       lastName: 'User',
-      passwordHash,
+      passwordHash: adminHash,
       role: 'ADMIN',
       status: 'ACTIVE',
     },
@@ -23,13 +27,13 @@ async function main() {
 
   // Demo Broker
   const broker = await prisma.user.upsert({
-    where: { email: 'broker@afin.com' },
+    where: { email: 'operations@afin.mz' },
     update: {},
     create: {
-      email: 'broker@afin.com',
+      email: 'operations@afin.mz',
       firstName: 'Broker',
       lastName: 'User',
-      passwordHash,
+      passwordHash: brokerHash,
       role: 'BROKER',
       status: 'ACTIVE',
     },
@@ -37,13 +41,13 @@ async function main() {
 
   // Demo Investor
   const investor = await prisma.user.upsert({
-    where: { email: 'investor@afin.com' },
+    where: { email: 'investor.demo@afin.mz' },
     update: {},
     create: {
-      email: 'investor@afin.com',
+      email: 'investor.demo@afin.mz',
       firstName: 'Investor',
       lastName: 'User',
-      passwordHash,
+      passwordHash: investorHash,
       role: 'INVESTOR',
       status: 'ACTIVE',
       investorProfile: {
@@ -70,10 +74,10 @@ async function main() {
     });
   }
 
-  console.log('Demo accounts created/verified:');
-  console.log('ADMIN: admin@afin.com / Password123!');
-  console.log('BROKER: broker@afin.com / Password123!');
-  console.log('INVESTOR: investor@afin.com / Password123!');
+  console.log('Production accounts created/verified:');
+  console.log('ADMIN: admin@afin.mz / AfiN#9xP@7zD!4qK');
+  console.log('BROKER: operations@afin.mz / BrkR*2yM^8wB!5tX');
+  console.log('INVESTOR: investor.demo@afin.mz / InvS%6hF$3vC#9nJ');
 }
 
 main()
