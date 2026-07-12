@@ -144,6 +144,19 @@ export default function AdminUsersPage() {
     setIsEditOpen(true);
   };
 
+  const handleViewDocument = async (docId: string) => {
+    try {
+      const response = await api.get(`/investors/documents/${docId}`, {
+        responseType: 'blob',
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      window.open(url, '_blank');
+    } catch (error) {
+      console.error('Failed to view document', error);
+      toast.error('Failed to load document');
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Title & Actions */}
@@ -560,18 +573,17 @@ export default function AdminUsersPage() {
                   <h4 className="text-xs uppercase tracking-wider text-[#79628c] font-bold">Verification Credentials</h4>
                   <div className="space-y-1.5">
                     {selectedUser.documents.map((doc: any) => (
-                      <a
+                      <button
                         key={doc.id}
-                        href={`http://127.0.0.1:3001/api/investors/documents/${doc.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between p-2.5 rounded bg-slate-50 hover:bg-red-50/20 border border-hairline-cool text-xs text-red-600 hover:text-red-700 font-medium hover:underline transition-all"
+                        type="button"
+                        onClick={() => handleViewDocument(doc.id)}
+                        className="flex items-center justify-between p-2.5 rounded bg-slate-50 hover:bg-red-50/20 border border-hairline-cool text-xs text-red-600 hover:text-red-700 font-medium hover:underline transition-all w-full text-left"
                       >
                         <span className="truncate max-w-[280px]">{doc.fileName}</span>
                         <span className="text-[9px] font-mono bg-slate-200/50 text-slate-600 px-1.5 py-0.5 rounded uppercase ml-2 shrink-0">
                           {doc.documentType.replace('_', ' ')}
                         </span>
-                      </a>
+                      </button>
                     ))}
                   </div>
                 </div>

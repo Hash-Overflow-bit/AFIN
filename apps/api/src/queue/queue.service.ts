@@ -26,6 +26,7 @@ export class QueueService implements OnModuleInit, OnModuleDestroy {
       ssl: {
         rejectUnauthorized: false,
       },
+      max: 2,
     });
 
     this.boss.on('error', (error) => {

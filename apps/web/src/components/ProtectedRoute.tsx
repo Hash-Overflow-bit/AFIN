@@ -26,7 +26,7 @@ export function ProtectedRoute({ children, requiredRoles = [] }: { children: Rea
   if (isLoading || !isAuthenticated) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-surface-canvas-dark text-on-primary">
-        <div className="animate-pulse text-lg font-mono">Loading AFIN...</div>
+        <div className="animate-pulse text-lg font-mono">Loading AGBX...</div>
       </div>
     );
   }

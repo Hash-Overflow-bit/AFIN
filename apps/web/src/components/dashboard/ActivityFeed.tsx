@@ -42,23 +42,23 @@ const getActionDetails = (action: string) => {
 
 export function ActivityFeed({ activities }: ActivityFeedProps) {
   return (
-    <div className="bg-white border border-[#e5e7eb] rounded-2xl p-6 shadow-sm flex flex-col h-full relative hover:z-50">
+    <div className="bg-white dark:bg-ink-deep border border-[#e5e7eb] dark:border-hairline-violet rounded-2xl p-6 shadow-sm flex flex-col h-full relative hover:z-50">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <div className="flex items-center">
-            <h3 className="text-[#1f1633] font-bold text-lg tracking-tight">Audit Trail</h3>
+            <h3 className="text-[#1f1633] dark:text-white font-bold text-lg tracking-tight">Audit Trail</h3>
             <Tooltip content="A chronologically ordered feed of recent critical financial transactions, such as order submissions, payment verifications, and bond allocations." />
           </div>
-          <p className="text-[#79628c] text-sm mt-1">Real-time financial events</p>
+          <p className="text-[#79628c] dark:text-on-dark-muted text-sm mt-1">Real-time financial events</p>
         </div>
-        <span className="px-2.5 py-1 bg-slate-50 border border-[#e5e7eb] rounded-md text-[10px] font-semibold text-[#79628c] uppercase tracking-widest">
+        <span className="px-2.5 py-1 bg-slate-50 dark:bg-[#1a1130] border border-[#e5e7eb] dark:border-hairline-violet rounded-md text-[10px] font-semibold text-[#79628c] dark:text-on-dark-muted uppercase tracking-widest">
           Live
         </span>
       </div>
       
       {activities.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">
-          <p className="text-[#79628c] text-sm text-center py-8">No recent activity.</p>
+          <p className="text-[#79628c] dark:text-on-dark-muted text-sm text-center py-8">No recent activity.</p>
         </div>
       ) : (
         <div className="overflow-y-auto pr-3 space-y-5 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent pb-4">
@@ -69,22 +69,22 @@ export function ActivityFeed({ activities }: ActivityFeedProps) {
               <div key={item.id} className="relative pl-4">
                 {/* Timeline connector */}
                 {index !== activities.length - 1 && (
-                  <div className="absolute left-[1.35rem] top-8 bottom-[-1.5rem] w-px bg-[#e5e7eb]"></div>
+                  <div className="absolute left-[1.35rem] top-8 bottom-[-1.5rem] w-px bg-[#e5e7eb] dark:bg-hairline-violet"></div>
                 )}
                 
                 <div className="flex gap-4">
                   <div className={`mt-0.5 flex-shrink-0 w-8 h-8 rounded-full border ${border} ${bg} ${color} flex items-center justify-center z-10 shadow-sm`}>
                     <Icon className="w-3.5 h-3.5" />
                   </div>
-                  <div className="flex-1 min-w-0 bg-[#f9fafb] border border-[#e5e7eb] rounded-xl p-3.5 hover:bg-white transition-colors shadow-sm">
-                    <p className="text-sm text-[#1f1633]">
+                  <div className="flex-1 min-w-0 bg-[#f9fafb] dark:bg-[#1a1130] border border-[#e5e7eb] dark:border-hairline-violet rounded-xl p-3.5 hover:bg-white dark:hover:bg-[#1f1735]/40 transition-colors shadow-sm">
+                    <p className="text-sm text-[#1f1633] dark:text-white">
                       <span className="font-semibold">
                         {item.user ? `${item.user.firstName} ${item.user.lastName}` : 'System'}
                       </span>{' '}
-                      <span className="text-[#79628c] font-light">performed:</span>{' '}
-                      <span className="font-medium text-[#422082]">{label}</span>
+                      <span className="text-[#79628c] dark:text-on-dark-muted font-light">performed:</span>{' '}
+                      <span className="font-medium text-[#422082] dark:text-accent-lime">{label}</span>
                     </p>
-                    <p className="text-xs text-[#79628c] mt-1.5 font-medium tracking-wide">
+                    <p className="text-xs text-[#79628c] dark:text-on-dark-muted mt-1.5 font-medium tracking-wide">
                       {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
                     </p>
                   </div>

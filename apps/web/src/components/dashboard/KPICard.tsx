@@ -19,20 +19,20 @@ export function KPICard({ title, value, icon: Icon, prefix = '', suffix = '', to
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: 0.1 }}
-      className="bg-white border border-[#e5e7eb] rounded-2xl p-6 relative group shadow-sm hover:z-50"
+      className="bg-white dark:bg-ink-deep border border-[#e5e7eb] dark:border-hairline-violet rounded-2xl p-6 relative group shadow-sm hover:z-50"
     >
       <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
-        <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity text-[#1f1633]">
+        <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity text-[#1f1633] dark:text-white">
           <Icon size={120} />
         </div>
       </div>
       <div className="flex items-center mb-3">
-        <p className="text-[#79628c] font-medium text-xs tracking-widest uppercase flex items-center gap-2 m-0">
+        <p className="text-[#79628c] dark:text-on-dark-muted font-medium text-xs tracking-widest uppercase flex items-center gap-2 m-0">
           <Icon size={14} /> {title}
         </p>
         {tooltip && <Tooltip content={tooltip} />}
       </div>
-      <h3 className="text-4xl md:text-5xl font-bold text-[#1f1633] tracking-tight relative z-10">
+      <h3 className="text-4xl md:text-5xl font-bold text-[#1f1633] dark:text-white tracking-tight relative z-10">
         <CountUp
           end={value}
           duration={2}

@@ -17,6 +17,20 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 
+/**
+ * Public bonds controller — no authentication required.
+ * Returns limited bond data for the landing page "Featured Offerings" section.
+ */
+@Controller('bonds')
+export class BondsPublicController {
+  constructor(private readonly bondsService: BondsService) {}
+
+  @Get('public')
+  findPublic() {
+    return this.bondsService.findPublic();
+  }
+}
+
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('bonds')
 export class BondsController {

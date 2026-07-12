@@ -37,7 +37,7 @@ export default function LoginPage() {
       <header className="w-full px-8 py-6 flex items-center z-20 relative">
         <Link href="/">
           <h1 className="font-logo text-white text-[28px] tracking-wider leading-none">
-            afin
+            AGBX
           </h1>
         </Link>
       </header>
@@ -62,7 +62,7 @@ export default function LoginPage() {
             </span>
           </h1>
           <p className="text-on-dark-muted font-medium">
-            Access your AFIN dashboard
+            Access your AGBX dashboard
           </p>
         </div>
 

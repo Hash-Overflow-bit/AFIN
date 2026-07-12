@@ -19,16 +19,23 @@ export class InvestorsService {
               lastName: true,
               role: true,
               status: true,
+              kycStatus: true,
+              kycRejectionReason: true,
             },
           },
         },
       });
 
       if (!profile) {
+        // Return a mock profile structure if they are a broker, to avoid breaking the UI for now
+        const user = await (this.prisma as any).user.findUnique({ where: { id: userId } });
+        if (user && user.role === 'BROKER') {
+           return { user, kycStatus: user.kycStatus };
+        }
         throw new NotFoundException('Investor profile not found');
       }
 
-      return profile;
+      return { ...profile, kycStatus: profile.user.kycStatus };
     } catch (e) {
       console.error('Error in getProfile:', e);
       throw e;
@@ -39,6 +46,7 @@ export class InvestorsService {
     try {
       const currentProfile = await (this.prisma as any).investorProfile.findUnique({
         where: { userId },
+        include: { user: true }
       });
 
       if (!currentProfile) {
@@ -61,9 +69,9 @@ export class InvestorsService {
         country
       );
 
-      let newKycStatus = currentProfile.kycStatus;
-      if (isProfileComplete && currentProfile.kycStatus === 'PENDING') {
-        newKycStatus = 'PROFILE_COMPLETE';
+      let newKycStatus = currentProfile.user.kycStatus;
+      if (isProfileComplete && currentProfile.user.kycStatus === 'INCOMPLETE') {
+        newKycStatus = 'PENDING';
       }
 
       const updatedProfile = await (this.prisma as any).investorProfile.update({
@@ -77,9 +85,15 @@ export class InvestorsService {
           city: dto.city,
           country: dto.country,
           postalCode: dto.postalCode,
-          kycStatus: newKycStatus,
         },
       });
+
+      if (newKycStatus !== currentProfile.user.kycStatus) {
+        await (this.prisma as any).user.update({
+          where: { id: userId },
+          data: { kycStatus: newKycStatus },
+        });
+      }
 
       await (this.prisma as any).activityLog.create({
         data: {
@@ -92,7 +106,7 @@ export class InvestorsService {
         },
       });
 
-      return updatedProfile;
+      return await this.getProfile(userId);
     } catch (e) {
       console.error('Error in updateProfile:', e);
       throw e;
@@ -101,12 +115,12 @@ export class InvestorsService {
 
   async uploadDocument(userId: string, file: Express.Multer.File, documentType?: string) {
     try {
-      const profile = await (this.prisma as any).investorProfile.findUnique({
-        where: { userId },
+      const user = await (this.prisma as any).user.findUnique({
+        where: { id: userId },
         select: { kycStatus: true },
       });
 
-      if (profile && ['DOCUMENTS_SUBMITTED', 'APPROVED'].includes(profile.kycStatus)) {
+      if (user && ['DOCUMENTS_SUBMITTED', 'APPROVED'].includes(user.kycStatus)) {
         throw new BadRequestException('Cannot upload documents while KYC is submitted for review or approved.');
       }
 
@@ -142,37 +156,42 @@ export class InvestorsService {
 
   async submitKyc(userId: string) {
     try {
-      const profile = await (this.prisma as any).investorProfile.findUnique({
-        where: { userId },
-        include: { user: true },
+      const user = await (this.prisma as any).user.findUnique({
+        where: { id: userId },
       });
 
-      if (!profile) {
-        throw new NotFoundException('Investor profile not found');
+      if (!user) {
+        throw new NotFoundException('User not found');
       }
 
-      if (!['PENDING', 'PROFILE_COMPLETE', 'REJECTED'].includes(profile.kycStatus)) {
-        throw new BadRequestException(`Cannot submit KYC application when status is ${profile.kycStatus}`);
+      if (!['PENDING', 'PROFILE_COMPLETE', 'REJECTED', 'INCOMPLETE'].includes(user.kycStatus)) {
+        throw new BadRequestException(`Cannot submit KYC application when status is ${user.kycStatus}`);
       }
 
-      // Check if they uploaded all three required document types: IDENTITY, TAX_NUMBER, ADDRESS
       const docs = await (this.prisma as any).document.findMany({
         where: { userId },
       });
 
       const uploadedTypes = new Set(docs.map((d: any) => d.documentType));
-      const requiredTypes = ['IDENTITY', 'TAX_NUMBER', 'ADDRESS'];
+      let requiredTypes: string[] = [];
+      
+      if (user.role === 'INVESTOR') {
+         requiredTypes = ['IDENTITY', 'TAX_NUMBER', 'ADDRESS'];
+      } else if (user.role === 'BROKER') {
+         requiredTypes = ['BROKER_LICENSE', 'IDENTITY'];
+      }
+
       const missingTypes = requiredTypes.filter(type => !uploadedTypes.has(type));
 
       if (missingTypes.length > 0) {
         throw new BadRequestException(
-          `Missing required documents: ${missingTypes.map(t => t === 'IDENTITY' ? 'Proof of Identity' : t === 'TAX_NUMBER' ? 'Proof of Tax Number (NUIT)' : 'Proof of Address').join(', ')}`
+          `Missing required documents: ${missingTypes.join(', ')}`
         );
       }
 
       // Update KYC status to DOCUMENTS_SUBMITTED
-      const updatedProfile = await (this.prisma as any).investorProfile.update({
-        where: { userId },
+      const updatedUser = await (this.prisma as any).user.update({
+        where: { id: userId },
         data: { kycStatus: 'DOCUMENTS_SUBMITTED' },
       });
 
@@ -186,7 +205,7 @@ export class InvestorsService {
           data: brokers.map((broker: any) => ({
             userId: broker.id,
             title: 'New KYC Application',
-            message: `Investor ${profile.user.firstName} ${profile.user.lastName} has submitted documents for KYC review.`,
+            message: `${user.role === 'BROKER' ? 'Broker' : 'Investor'} ${user.firstName} ${user.lastName} has submitted documents for KYC review.`,
             type: 'KYC_SUBMISSION',
           })),
         });
@@ -196,13 +215,13 @@ export class InvestorsService {
         data: {
           userId,
           action: 'KYC_SUBMITTED',
-          resourceType: 'investor_profiles',
-          resourceId: profile.id,
+          resourceType: 'users',
+          resourceId: user.id,
           details: JSON.stringify({ documentCount: docs.length }),
         },
       });
 
-      return updatedProfile;
+      return updatedUser;
     } catch (e) {
       console.error('Error in submitKyc:', e);
       throw e;
@@ -225,82 +244,80 @@ export class InvestorsService {
       throw new NotFoundException('Document not found');
     }
 
-    // Role based check: if INVESTOR, can only view own documents
     if (requestUser.role === 'INVESTOR' && document.userId !== requestUser.id) {
-      throw new NotFoundException('Document not found'); // Use NotFound instead of Forbidden to prevent enumeration
+      throw new NotFoundException('Document not found');
     }
 
     return document;
   }
+  
   async getKycQueue() {
-    return (this.prisma as any).investorProfile.findMany({
+    const users = await (this.prisma as any).user.findMany({
       where: {
         kycStatus: 'DOCUMENTS_SUBMITTED',
       },
-      include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-            firstName: true,
-            lastName: true,
-            status: true,
-            createdAt: true,
-          },
-        },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        role: true,
+        status: true,
+        kycStatus: true,
+        createdAt: true,
       },
       orderBy: {
         updatedAt: 'desc',
       },
     });
+
+    // Structure response so UI expecting investorProfile.user works seamlessly
+    return users.map((user: any) => ({
+      userId: user.id,
+      kycStatus: user.kycStatus,
+      user,
+    }));
   }
 
   async getInvestors(statusFilter?: string) {
-    const where: any = {};
+    const where: any = { role: 'INVESTOR' };
     if (statusFilter) {
       where.kycStatus = statusFilter;
     }
 
-    return (this.prisma as any).investorProfile.findMany({
+    const users = await (this.prisma as any).user.findMany({
       where,
-      include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-            firstName: true,
-            lastName: true,
-            status: true,
-            createdAt: true,
-          },
-        },
+      select: {
+        id: true,
+        email: true,
+        firstName: true,
+        lastName: true,
+        status: true,
+        kycStatus: true,
+        createdAt: true,
       },
       orderBy: {
         createdAt: 'desc',
       },
     });
+
+    return users.map((user: any) => ({
+      userId: user.id,
+      kycStatus: user.kycStatus,
+      user,
+    }));
   }
 
   async getInvestorDetails(userId: string) {
-    const profile = await (this.prisma as any).investorProfile.findUnique({
-      where: { userId },
+    const user = await (this.prisma as any).user.findUnique({
+      where: { id: userId },
       include: {
-        user: {
-          select: {
-            id: true,
-            email: true,
-            firstName: true,
-            lastName: true,
-            phone: true,
-            status: true,
-            createdAt: true,
-          },
-        },
+        investorProfile: true,
       },
     });
 
-    if (!profile) {
-      throw new NotFoundException('Investor not found');
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
 
     const documents = await (this.prisma as any).document.findMany({
@@ -309,45 +326,38 @@ export class InvestorsService {
     });
 
     return {
-      profile,
+      profile: { ...(user.investorProfile || {}), kycStatus: user.kycStatus, user },
       documents,
     };
   }
 
   async updateKycStatus(userId: string, status: string, reason?: string, brokerId?: string) {
-    const profile = await (this.prisma as any).investorProfile.findUnique({ where: { userId } });
-    if (!profile) {
-      throw new NotFoundException('Investor profile not found');
+    const user = await (this.prisma as any).user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
     }
 
-    const updatedProfile = await (this.prisma as any).investorProfile.update({
-      where: { userId },
+    const updatedUser = await (this.prisma as any).user.update({
+      where: { id: userId },
       data: {
         kycStatus: status,
         kycRejectionReason: reason || null,
         kycReviewedBy: brokerId || null,
         kycReviewedAt: new Date(),
+        ...(status === 'APPROVED' ? { status: 'ACTIVE' } : {})
       },
     });
-
-    if (status === 'APPROVED') {
-      await (this.prisma as any).user.update({
-        where: { id: userId },
-        data: { status: 'ACTIVE' },
-      });
-    }
 
     await (this.prisma as any).activityLog.create({
       data: {
         userId,
         action: `KYC_${status}`,
-        resourceType: 'investor_profiles',
-        resourceId: profile.id,
+        resourceType: 'users',
+        resourceId: user.id,
         details: JSON.stringify({ reason }),
       },
     });
 
-    // Create Notification for Investor
     let title = 'KYC Status Update';
     let message = `Your KYC application has been updated to ${status}.`;
     
@@ -368,6 +378,11 @@ export class InvestorsService {
       },
     });
 
-    return updatedProfile;
+    // Mock return shape to prevent breaking UI
+    return {
+      userId: updatedUser.id,
+      kycStatus: updatedUser.kycStatus,
+      user: updatedUser,
+    };
   }
 }

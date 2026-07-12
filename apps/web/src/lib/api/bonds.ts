@@ -8,9 +8,11 @@ export interface Bond {
   country: string;
   currency: string;
   couponRate: number;
+  yieldRate?: number;
   couponFrequency: string;
   faceValue: number;
   minInvestment: number;
+  totalIssuance?: number;
   issueDate: string;
   maturityDate: string;
   status: string;

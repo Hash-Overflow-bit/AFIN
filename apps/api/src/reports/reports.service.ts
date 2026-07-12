@@ -138,7 +138,7 @@ export class ReportsService {
           lastName: u.lastName,
           email: u.email,
           status: u.status,
-          kycStatus: u.investorProfile?.kycStatus || 'PENDING',
+          kycStatus: u.kycStatus || 'INCOMPLETE',
           joinedDate: u.createdAt.toISOString(),
         }));
 

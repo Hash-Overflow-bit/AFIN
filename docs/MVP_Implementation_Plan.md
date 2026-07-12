@@ -765,9 +765,9 @@ PENDING_REVIEW →[Cancel]→ CANCELLED
 
 ### TASK 10.1 — E2E Testing (3 pts)
 
-- [ ] Test full investor journey (register → invest → portfolio)
-- [ ] Test access control (role-based route protection)
-- [ ] Test edge cases (invalid inputs, file limits, duplicate orders)
+- [x] Test full investor journey (register → invest → portfolio)
+- [x] Test access control (role-based route protection)
+- [x] Test edge cases (invalid inputs, file limits, duplicate orders)
 
 ### TASK 10.2 — Bug Fixes (3 pts)
 

@@ -2,7 +2,12 @@
 
 import { useEffect, useRef, useState, ReactNode } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { ChevronRight, Landmark, Briefcase, TrendingUp, Shield, BarChart3, Users, FileText, CheckCircle2, Globe, Building2, Menu, X } from "lucide-react";
+
+const YieldCurveChart = dynamic(() => import("@/components/landing/YieldCurveChart"), { ssr: false });
+const FeaturedOfferings = dynamic(() => import("@/components/landing/FeaturedOfferings"), { ssr: false });
+const RoleBenefits = dynamic(() => import("@/components/landing/RoleBenefits"), { ssr: false });
 
 // ScrollReveal component triggers the fade-in-up animation when the element enters the viewport
 function ScrollReveal({ children, delay = "0s", className = "" }: { children?: ReactNode, delay?: string, className?: string }) {
@@ -58,7 +63,7 @@ export default function LandingPage() {
           {/* Logo */}
           <Link href="/">
             <h1 className="font-logo text-white text-3xl font-bold tracking-wider">
-              afin
+              AGBX
             </h1>
           </Link>
           
@@ -66,6 +71,7 @@ export default function LandingPage() {
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-on-primary/90">
             <Link href="#about" className="hover:text-accent-lime transition-colors">About</Link>
             <Link href="#how-it-works" className="hover:text-accent-lime transition-colors">How it Works</Link>
+            <Link href="#offerings" className="hover:text-accent-lime transition-colors">Offerings</Link>
             <Link href="#company" className="hover:text-accent-lime transition-colors">Company</Link>
           </div>
         </div>
@@ -97,6 +103,7 @@ export default function LandingPage() {
         <div className="md:hidden absolute top-[80px] left-0 right-0 bg-[#0a0514]/95 backdrop-blur-xl border-b border-white/10 z-40 px-8 py-6 flex flex-col gap-6 shadow-level-4 animate-fade-in-up">
           <Link href="#about" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-medium hover:text-accent-lime transition-colors">About</Link>
           <Link href="#how-it-works" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-medium hover:text-accent-lime transition-colors">How it Works</Link>
+          <Link href="#offerings" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-medium hover:text-accent-lime transition-colors">Offerings</Link>
           <Link href="#company" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-medium hover:text-accent-lime transition-colors">Company</Link>
           
           <div className="w-full h-px bg-white/10 my-2" />
@@ -208,16 +215,19 @@ export default function LandingPage() {
         </div>
       </ScrollReveal>
 
+      {/* Yield Curve Chart */}
+      <YieldCurveChart />
+
       {/* About Section */}
       <section id="about" className="w-full py-24 md:py-32 relative z-20 bg-white overflow-hidden text-[#1f1633]">
         <div className="max-w-[1400px] mx-auto px-8 flex flex-col md:flex-row gap-16 items-center">
           <ScrollReveal delay="0.1s" className="w-full md:w-1/2">
-            <h2 className="text-accent-violet-deep font-bold tracking-widest uppercase text-sm mb-4">About afin</h2>
+            <h2 className="text-accent-violet-deep font-bold tracking-widest uppercase text-sm mb-4">About agbx</h2>
             <h3 className="font-display text-5xl lg:text-6xl font-extrabold mb-6 leading-tight text-[#1f1633]">
               Democratizing Access to Sovereign Debt
             </h3>
             <p className="text-gray-600 text-lg leading-relaxed mb-6">
-              The African Fixed Income Network (AFIN) is a secure, institutional-grade platform designed to connect retail and institutional investors directly with high-yield government bonds in Mozambique.
+              The African Government Bond Exchange (AGBX) is a secure, institutional-grade platform designed to connect retail and institutional investors directly with high-yield government bonds in Mozambique.
             </p>
             <p className="text-gray-600 text-lg leading-relaxed">
               We eliminate traditional barriers to entry by providing a transparent, fully digital brokerage experience where you can securely verify your identity, browse active bond issuances, and track your portfolio&apos;s performance in real time.
@@ -243,49 +253,131 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* How it Works Section */}
-      <section id="how-it-works" className="w-full py-24 md:py-32 relative z-20 bg-[#f9fafb] text-[#1f1633] border-t border-gray-100">
-        <div className="max-w-[1400px] mx-auto px-8 text-center">
-          <ScrollReveal delay="0.1s">
+      {/* How it Works Section — 4-Step Pipeline */}
+      <section id="how-it-works" className="w-full py-24 md:py-32 relative z-20 bg-[#f9fafb] text-[#1f1633] border-t border-gray-100 overflow-hidden">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-8">
+          <ScrollReveal delay="0.1s" className="text-center mb-16 md:mb-20">
             <h2 className="text-accent-violet-deep font-bold tracking-widest uppercase text-sm mb-4">How It Works</h2>
-            <h3 className="font-display text-5xl lg:text-6xl font-extrabold mb-16 md:mb-24 text-[#1f1633]">
-              Start Investing in 3 Simple Steps
+            <h3 className="font-display text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#1f1633] mb-4">
+              Your Investment Journey
             </h3>
+            <p className="text-gray-500 text-lg max-w-2xl mx-auto">
+              From registration to portfolio returns — a transparent, four-step process.
+            </p>
           </ScrollReveal>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16 relative">
-            {/* Connecting line for desktop */}
-            <ScrollReveal delay="0.4s" className="hidden md:block absolute top-12 left-[15%] right-[15%] h-[2px] bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
-            
-            <ScrollReveal delay="0.2s" className="relative flex flex-col items-center group">
-              <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center z-10 mb-8 shadow-sm group-hover:shadow-md transition-all relative border border-gray-100 group-hover:scale-105 duration-300">
-                <Users className="w-10 h-10 text-accent-violet" />
-                <div className="absolute -top-2 -right-2 w-8 h-8 bg-accent-violet text-white font-bold rounded-full flex items-center justify-center shadow-sm">1</div>
-              </div>
-              <h4 className="font-bold text-2xl mb-4">Create Profile</h4>
-              <p className="text-gray-600 text-center max-w-[280px] leading-relaxed">Register an account and quickly verify your identity using our seamless KYC workflow.</p>
+
+          {/* Pipeline Steps */}
+          <div className="relative">
+            {/* Desktop connecting line */}
+            <ScrollReveal delay="0.3s" className="hidden lg:block absolute top-[72px] left-[12%] right-[12%] h-[3px] z-0">
+              <div className="w-full h-full bg-gradient-to-r from-accent-violet via-accent-violet-mid to-accent-lime rounded-full opacity-20" />
+              <div className="absolute inset-0 h-full bg-gradient-to-r from-accent-violet via-accent-violet-mid to-accent-lime rounded-full opacity-40" style={{ backgroundSize: '20px 3px', backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 10px, #f9fafb 10px, #f9fafb 14px)' }} />
             </ScrollReveal>
 
-            <ScrollReveal delay="0.4s" className="relative flex flex-col items-center group">
-              <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center z-10 mb-8 shadow-sm group-hover:shadow-md transition-all relative border border-gray-100 group-hover:scale-105 duration-300">
-                <FileText className="w-10 h-10 text-accent-violet-mid" />
-                <div className="absolute -top-2 -right-2 w-8 h-8 bg-accent-violet-mid text-white font-bold rounded-full flex items-center justify-center shadow-sm">2</div>
-              </div>
-              <h4 className="font-bold text-2xl mb-4">Browse Bonds</h4>
-              <p className="text-gray-600 text-center max-w-[280px] leading-relaxed">Explore open government bond offerings, review yield rates, and place your investment orders.</p>
-            </ScrollReveal>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-6 relative z-10">
+              {/* Step 1 — Onboard */}
+              <ScrollReveal delay="0.2s" className="group">
+                <div className="bg-white rounded-2xl p-6 md:p-7 border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
+                  <div className="flex items-center gap-4 mb-5">
+                    <div className="relative">
+                      <div className="w-14 h-14 bg-accent-violet/10 rounded-xl flex items-center justify-center group-hover:bg-accent-violet/20 transition-colors">
+                        <Users className="w-7 h-7 text-accent-violet" />
+                      </div>
+                      <div className="absolute -top-2 -right-2 w-7 h-7 bg-accent-violet text-white text-xs font-bold rounded-full flex items-center justify-center shadow-sm">1</div>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-accent-violet">Step 1</p>
+                      <h4 className="font-bold text-xl text-[#1f1633]">Onboard</h4>
+                    </div>
+                  </div>
+                  <p className="text-gray-500 text-sm leading-relaxed flex-1">
+                    Register your account and complete KYC verification to get approved as an investor on the platform.
+                  </p>
+                  {/* Mobile connector */}
+                  <div className="lg:hidden flex justify-center mt-5">
+                    <div className="w-[2px] h-8 bg-gradient-to-b from-accent-violet to-accent-violet-mid opacity-30" />
+                  </div>
+                </div>
+              </ScrollReveal>
 
-            <ScrollReveal delay="0.6s" className="relative flex flex-col items-center group">
-              <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center z-10 mb-8 shadow-sm group-hover:shadow-md transition-all relative border border-gray-100 group-hover:scale-105 duration-300">
-                <CheckCircle2 className="w-10 h-10 text-accent-violet-deep" />
-                <div className="absolute -top-2 -right-2 w-8 h-8 bg-accent-violet-deep text-white font-bold rounded-full flex items-center justify-center shadow-sm">3</div>
-              </div>
-              <h4 className="font-bold text-2xl mb-4">Earn Returns</h4>
-              <p className="text-gray-600 text-center max-w-[280px] leading-relaxed">Upload payment proof, get your bonds allocated, and track your scheduled coupon payouts.</p>
-            </ScrollReveal>
+              {/* Step 2 — Subscribe */}
+              <ScrollReveal delay="0.35s" className="group">
+                <div className="bg-white rounded-2xl p-6 md:p-7 border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
+                  <div className="flex items-center gap-4 mb-5">
+                    <div className="relative">
+                      <div className="w-14 h-14 bg-accent-violet-mid/10 rounded-xl flex items-center justify-center group-hover:bg-accent-violet-mid/20 transition-colors">
+                        <FileText className="w-7 h-7 text-accent-violet-mid" />
+                      </div>
+                      <div className="absolute -top-2 -right-2 w-7 h-7 bg-accent-violet-mid text-white text-xs font-bold rounded-full flex items-center justify-center shadow-sm">2</div>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-accent-violet-mid">Step 2</p>
+                      <h4 className="font-bold text-xl text-[#1f1633]">Subscribe</h4>
+                    </div>
+                  </div>
+                  <p className="text-gray-500 text-sm leading-relaxed flex-1">
+                    Browse open bond offerings and place your investment subscription order with your desired amount.
+                  </p>
+                  <div className="lg:hidden flex justify-center mt-5">
+                    <div className="w-[2px] h-8 bg-gradient-to-b from-accent-violet-mid to-[#c2ef4e] opacity-30" />
+                  </div>
+                </div>
+              </ScrollReveal>
+
+              {/* Step 3 — Auction */}
+              <ScrollReveal delay="0.5s" className="group">
+                <div className="bg-white rounded-2xl p-6 md:p-7 border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
+                  <div className="flex items-center gap-4 mb-5">
+                    <div className="relative">
+                      <div className="w-14 h-14 bg-[#c2ef4e]/15 rounded-xl flex items-center justify-center group-hover:bg-[#c2ef4e]/25 transition-colors">
+                        <Landmark className="w-7 h-7 text-[#6d8a2e]" />
+                      </div>
+                      <div className="absolute -top-2 -right-2 w-7 h-7 bg-[#8ab834] text-white text-xs font-bold rounded-full flex items-center justify-center shadow-sm">3</div>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#6d8a2e]">Step 3</p>
+                      <h4 className="font-bold text-xl text-[#1f1633]">Auction</h4>
+                    </div>
+                  </div>
+                  <p className="text-gray-500 text-sm leading-relaxed flex-1">
+                    Your order enters the auction window. Upload payment proof while the subscription period is open.
+                  </p>
+                  <div className="lg:hidden flex justify-center mt-5">
+                    <div className="w-[2px] h-8 bg-gradient-to-b from-[#c2ef4e] to-[#fa7faa] opacity-30" />
+                  </div>
+                </div>
+              </ScrollReveal>
+
+              {/* Step 4 — Allocate */}
+              <ScrollReveal delay="0.65s" className="group">
+                <div className="bg-white rounded-2xl p-6 md:p-7 border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
+                  <div className="flex items-center gap-4 mb-5">
+                    <div className="relative">
+                      <div className="w-14 h-14 bg-[#fa7faa]/10 rounded-xl flex items-center justify-center group-hover:bg-[#fa7faa]/20 transition-colors">
+                        <CheckCircle2 className="w-7 h-7 text-[#fa7faa]" />
+                      </div>
+                      <div className="absolute -top-2 -right-2 w-7 h-7 bg-[#fa7faa] text-white text-xs font-bold rounded-full flex items-center justify-center shadow-sm">4</div>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#fa7faa]">Step 4</p>
+                      <h4 className="font-bold text-xl text-[#1f1633]">Allocate</h4>
+                    </div>
+                  </div>
+                  <p className="text-gray-500 text-sm leading-relaxed flex-1">
+                    Bonds are allocated pro-rata. Track your portfolio holdings and earn scheduled coupon payments.
+                  </p>
+                </div>
+              </ScrollReveal>
+            </div>
           </div>
         </div>
       </section>
+
+      {/* Roles & Benefits Section */}
+      <RoleBenefits />
+
+      {/* Featured Offerings */}
+      <FeaturedOfferings />
 
       {/* Company Section - Pinterest Masonry Layout */}
       <section id="company" className="w-full py-24 md:py-32 relative z-20 bg-surface-night border-t border-white/5">
@@ -294,7 +386,7 @@ export default function LandingPage() {
             <h2 className="text-accent-violet font-bold tracking-widest uppercase text-sm mb-4">Our Company</h2>
             <h3 className="font-display text-4xl lg:text-5xl font-extrabold mb-6">Building the Financial Infrastructure of Tomorrow</h3>
             <p className="text-on-dark-muted text-lg leading-relaxed max-w-3xl mx-auto">
-              AFIN is backed by a consortium of leading financial technologists, economists, and legal experts dedicated to bridging the gap between national treasuries and everyday investors.
+              AGBX is backed by a consortium of leading financial technologists, economists, and legal experts dedicated to bridging the gap between national treasuries and everyday investors.
             </p>
           </ScrollReveal>
 
@@ -363,14 +455,14 @@ export default function LandingPage() {
           {/* Massive Logo Text */}
           <div className="w-full flex justify-center mb-24 select-none relative z-20">
             <h2 className="font-logo font-bold leading-none tracking-tight text-transparent [-webkit-text-stroke:3px_rgba(255,255,255,0.3)] hover:[-webkit-text-stroke:3px_rgba(255,255,255,0.8)] transition-all duration-700 cursor-default" style={{ fontSize: 'clamp(80px, 22vw, 350px)' }}>
-              afin
+              AGBX
             </h2>
           </div>
 
           {/* Minimal Bottom Bar */}
           <div className="w-full flex flex-col md:flex-row justify-between items-center text-[#8e8e8e] text-sm font-medium gap-6">
             <div className="flex flex-col md:flex-row gap-4 md:gap-8 items-center">
-              <span>&copy; {new Date().getFullYear()} AFIN. All rights reserved.</span>
+              <span>&copy; {new Date().getFullYear()} AGBX. All rights reserved.</span>
               <a href="https://www.upwork.com/freelancers/~018cb6b2be97dd2433" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors opacity-50 hover:opacity-100 hidden md:block">Developed by Hash-overflow</a>
             </div>
             <div className="flex gap-8">

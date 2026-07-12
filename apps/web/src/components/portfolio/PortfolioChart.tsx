@@ -4,11 +4,16 @@ import { motion } from 'framer-motion';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { CouponPayment } from '@/lib/api/portfolio';
 
+import { useTheme } from '@/contexts/ThemeContext';
+
 interface Props {
   coupons: CouponPayment[];
 }
 
 export default function PortfolioChart({ coupons }: Props) {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+
   const data = coupons.reduce((acc: any[], curr) => {
     const date = new Date(curr.paymentDate);
     const monthYear = date.toLocaleString('default', { month: 'short', year: '2-digit' });
@@ -33,9 +38,9 @@ export default function PortfolioChart({ coupons }: Props) {
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ delay: 0.4 }}
-      className="bg-white border border-[#e5e7eb] rounded-2xl p-6 shadow-sm"
+      className="bg-white dark:bg-ink-deep border border-[#e5e7eb] dark:border-hairline-violet rounded-2xl p-6 shadow-sm"
     >
-      <h3 className="text-lg font-bold text-[#1f1633] mb-6">Projected Coupon Cashflows</h3>
+      <h3 className="text-lg font-bold text-[#1f1633] dark:text-white mb-6">Projected Coupon Cashflows</h3>
       <div className="h-[300px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -45,12 +50,18 @@ export default function PortfolioChart({ coupons }: Props) {
                 <stop offset="95%" stopColor="#6a5fc1" stopOpacity={0}/>
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-            <XAxis dataKey="name" stroke="#79628c" fontSize={12} tickLine={false} axisLine={false} />
-            <YAxis stroke="#79628c" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `MT ${val/1000}k`} />
+            <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#362d59' : '#f0f0f0'} vertical={false} />
+            <XAxis dataKey="name" stroke={isDark ? 'rgba(255,255,255,0.48)' : '#79628c'} fontSize={12} tickLine={false} axisLine={false} />
+            <YAxis stroke={isDark ? 'rgba(255,255,255,0.48)' : '#79628c'} fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `MT ${val/1000}k`} />
             <Tooltip 
-              contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', color: '#1f1633', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-              itemStyle={{ color: '#422082', fontWeight: 600 }}
+              contentStyle={{ 
+                backgroundColor: isDark ? '#1a1130' : '#ffffff', 
+                border: isDark ? '1px solid #362d59' : '1px solid #e5e7eb', 
+                borderRadius: '8px', 
+                color: isDark ? '#ffffff' : '#1f1633', 
+                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' 
+              }}
+              itemStyle={{ color: isDark ? '#c2ef4e' : '#422082', fontWeight: 600 }}
             />
             <Area type="monotone" dataKey="value" stroke="#6a5fc1" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
           </AreaChart>

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, ResponsiveContainer, Legend } from 'recharts';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Tooltip } from './Tooltip';
 
 interface OrderStatusChartProps {
@@ -11,7 +12,7 @@ interface OrderStatusChartProps {
   }[];
 }
 
-// Light theme color palette
+// Light / Dark color palette mapping
 const COLORS = {
   PENDING_REVIEW: '#d97706', // amber-600
   AWAITING_PAYMENT: '#3b82f6', // blue-500
@@ -38,10 +39,13 @@ const formatName = (name: string) => {
 };
 
 export function OrderStatusChart({ data }: OrderStatusChartProps) {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+
   if (!data || data.length === 0) {
     return (
-      <div className="bg-white border border-[#e5e7eb] rounded-2xl p-6 h-full min-h-[400px] flex items-center justify-center shadow-sm">
-        <p className="text-[#79628c]">No order data available.</p>
+      <div className="bg-white dark:bg-ink-deep border border-[#e5e7eb] dark:border-hairline-violet rounded-2xl p-6 h-full min-h-[400px] flex items-center justify-center shadow-sm">
+        <p className="text-[#79628c] dark:text-on-dark-muted">No order data available.</p>
       </div>
     );
   }
@@ -54,19 +58,19 @@ export function OrderStatusChart({ data }: OrderStatusChartProps) {
   const totalOrders = chartData.reduce((acc, curr) => acc + curr.value, 0);
 
   return (
-    <div className="bg-white border border-[#e5e7eb] rounded-2xl p-6 shadow-sm flex flex-col h-full">
+    <div className="bg-white dark:bg-ink-deep border border-[#e5e7eb] dark:border-hairline-violet rounded-2xl p-6 shadow-sm flex flex-col h-full">
       <div className="mb-2">
         <div className="flex items-center">
-          <h3 className="text-[#1f1633] font-bold text-lg tracking-tight">Order Pipeline</h3>
+          <h3 className="text-[#1f1633] dark:text-white font-bold text-lg tracking-tight">Order Pipeline</h3>
           <Tooltip content="Live distribution of all orders currently moving through the platform, grouped by their exact status." />
         </div>
-        <p className="text-[#79628c] text-sm mt-1">Current distribution by status</p>
+        <p className="text-[#79628c] dark:text-on-dark-muted text-sm mt-1">Current distribution by status</p>
       </div>
       <div className="flex-1 w-full min-h-[250px] relative">
         {/* Centered Total Label inside Donut */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ paddingBottom: '36px' }}>
-          <span className="text-3xl font-bold text-[#1f1633]">{totalOrders.toLocaleString()}</span>
-          <span className="text-[10px] font-semibold text-[#79628c] uppercase tracking-widest mt-0.5">Total</span>
+          <span className="text-3xl font-bold text-[#1f1633] dark:text-white">{totalOrders.toLocaleString()}</span>
+          <span className="text-[10px] font-semibold text-[#79628c] dark:text-on-dark-muted uppercase tracking-widest mt-0.5">Total</span>
         </div>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -90,15 +94,23 @@ export function OrderStatusChart({ data }: OrderStatusChartProps) {
               ))}
             </Pie>
             <RechartsTooltip 
-              contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e5e7eb', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
-              itemStyle={{ color: '#1f1633', fontWeight: 600 }}
-              formatter={(value: number) => [value.toLocaleString(), 'Orders']}
+              contentStyle={{ 
+                backgroundColor: isDark ? '#1a1130' : '#ffffff', 
+                borderColor: isDark ? '#362d59' : '#e5e7eb', 
+                borderRadius: '12px', 
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' 
+              }}
+              itemStyle={{ color: isDark ? '#ffffff' : '#1f1633', fontWeight: 600 }}
+              formatter={(value: any) => {
+                const numValue = typeof value === 'number' ? value : Number(value || 0);
+                return [numValue.toLocaleString(), 'Orders'];
+              }}
             />
             <Legend 
               verticalAlign="bottom" 
               height={36} 
               iconType="circle"
-              wrapperStyle={{ fontSize: '12px', color: '#79628c', paddingTop: '20px' }}
+              wrapperStyle={{ fontSize: '12px', color: isDark ? 'rgba(255,255,255,0.72)' : '#79628c', paddingTop: '20px' }}
             />
           </PieChart>
         </ResponsiveContainer>

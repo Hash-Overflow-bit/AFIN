@@ -13,6 +13,7 @@ interface User {
   status: string;
   companyName?: string;
   licenseNumber?: string;
+  kycStatus?: string;
   investorProfile?: {
     kycStatus: string;
   };
@@ -23,7 +24,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  login: (data: any) => void;
+  login: (data: any, redirect?: boolean) => void;
   logout: () => void;
 }
 
@@ -53,29 +54,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loadUser();
   }, []);
 
-  const login = (data: { user: User; accessToken: string; refreshToken: string }) => {
+  const login = (data: { user: User; accessToken: string; refreshToken: string }, redirect: boolean = true) => {
     localStorage.setItem("user", JSON.stringify(data.user));
     localStorage.setItem("accessToken", data.accessToken);
     localStorage.setItem("refreshToken", data.refreshToken);
     setUser(data.user);
     
-    // Redirect based on role
-    if (data.user.role === 'INVESTOR') {
-      const kycStatus = data.user.investorProfile?.kycStatus;
-      if (!kycStatus || ['PENDING', 'PROFILE_COMPLETE', 'REJECTED'].includes(kycStatus)) {
-        router.push("/profile");
+    if (redirect) {
+      // Redirect based on role
+      if (data.user.role === 'INVESTOR') {
+        const kycStatus = data.user.investorProfile?.kycStatus || data.user.kycStatus;
+        if (!kycStatus || ['INCOMPLETE', 'PENDING', 'PROFILE_COMPLETE', 'REJECTED'].includes(kycStatus)) {
+          router.push("/profile");
+        } else {
+          // If APPROVED or DOCUMENTS_SUBMITTED, send to dashboard
+          router.push("/dashboard");
+        }
+      } else if (data.user.role === 'BROKER') {
+        if (!data.user.kycStatus || ['INCOMPLETE', 'PENDING', 'PROFILE_COMPLETE', 'REJECTED'].includes(data.user.kycStatus)) {
+          router.push("/broker/onboarding");
+        } else {
+          router.push("/broker/dashboard");
+        }
       } else {
-        // If APPROVED or DOCUMENTS_SUBMITTED, send to portfolio
-        router.push("/portfolio");
+        router.push("/admin/dashboard");
       }
-    } else if (data.user.role === 'BROKER') {
-      if (data.user.status === 'PENDING') {
-        router.push("/broker/onboarding");
-      } else {
-        router.push("/broker/dashboard");
-      }
-    } else {
-      router.push("/admin/dashboard");
     }
   };
 

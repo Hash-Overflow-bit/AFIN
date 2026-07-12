@@ -1,6 +1,6 @@
-# AFIN Platform - User Manual (Phase 1 MVP)
+# AGBX Platform - User Manual (Phase 1 MVP)
 
-Welcome to the African Fixed Income Network (AFIN) Digital Exchange Platform. This manual explains the roles, workflows, and inter-dependencies of the platform through Day 8 (Admin Panel & Security Hardening).
+Welcome to the African Government Bond Exchange (AGBX) Digital Exchange Platform. This manual explains the roles, workflows, and inter-dependencies of the platform through Day 8 (Admin Panel & Security Hardening).
 
 ---
 

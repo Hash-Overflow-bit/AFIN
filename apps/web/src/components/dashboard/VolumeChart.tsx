@@ -3,6 +3,7 @@
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { format, parseISO } from 'date-fns';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Tooltip } from './Tooltip';
 
 interface VolumeChartProps {
@@ -13,22 +14,25 @@ interface VolumeChartProps {
 }
 
 export function VolumeChart({ data }: VolumeChartProps) {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+
   if (!data || data.length === 0) {
     return (
-      <div className="bg-white border border-[#e5e7eb] rounded-2xl p-6 h-full min-h-[400px] flex items-center justify-center shadow-sm">
-        <p className="text-[#79628c]">No volume data available.</p>
+      <div className="bg-white dark:bg-ink-deep border border-[#e5e7eb] dark:border-hairline-violet rounded-2xl p-6 h-full min-h-[400px] flex items-center justify-center shadow-sm">
+        <p className="text-[#79628c] dark:text-on-dark-muted">No volume data available.</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white border border-[#e5e7eb] rounded-2xl p-6 shadow-sm h-full flex flex-col">
+    <div className="bg-white dark:bg-ink-deep border border-[#e5e7eb] dark:border-hairline-violet rounded-2xl p-6 shadow-sm h-full flex flex-col">
       <div className="mb-6">
         <div className="flex items-center">
-          <h3 className="text-[#1f1633] font-bold text-lg tracking-tight">Trading Volume</h3>
+          <h3 className="text-[#1f1633] dark:text-white font-bold text-lg tracking-tight">Trading Volume</h3>
           <Tooltip content="Shows the total aggregated requested amount of all orders placed over the last 30 days." />
         </div>
-        <p className="text-[#79628c] text-sm mt-1">30-day aggregate requested volume</p>
+        <p className="text-[#79628c] dark:text-on-dark-muted text-sm mt-1">30-day aggregate requested volume</p>
       </div>
       <div className="flex-1 w-full min-h-[250px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -39,10 +43,10 @@ export function VolumeChart({ data }: VolumeChartProps) {
                 <stop offset="95%" stopColor="#6a5fc1" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#362d59' : '#e5e7eb'} vertical={false} />
             <XAxis 
               dataKey="date" 
-              stroke="#79628c" 
+              stroke={isDark ? 'rgba(255,255,255,0.48)' : '#79628c'} 
               fontSize={11} 
               tickFormatter={(val) => format(parseISO(val), 'MMM dd')}
               tickLine={false}
@@ -50,7 +54,7 @@ export function VolumeChart({ data }: VolumeChartProps) {
               dy={15}
             />
             <YAxis 
-              stroke="#79628c" 
+              stroke={isDark ? 'rgba(255,255,255,0.48)' : '#79628c'} 
               fontSize={11}
               tickFormatter={(val) => `${(val / 1000000).toFixed(1)}M`}
               tickLine={false}
@@ -58,11 +62,19 @@ export function VolumeChart({ data }: VolumeChartProps) {
               dx={-10}
             />
             <RechartsTooltip 
-              contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e5e7eb', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
-              itemStyle={{ color: '#1f1633', fontWeight: 600 }}
-              labelStyle={{ color: '#79628c', marginBottom: '8px', fontSize: '12px' }}
+              contentStyle={{ 
+                backgroundColor: isDark ? '#1a1130' : '#ffffff', 
+                borderColor: isDark ? '#362d59' : '#e5e7eb', 
+                borderRadius: '12px', 
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' 
+              }}
+              itemStyle={{ color: isDark ? '#ffffff' : '#1f1633', fontWeight: 600 }}
+              labelStyle={{ color: isDark ? 'rgba(255,255,255,0.72)' : '#79628c', marginBottom: '8px', fontSize: '12px' }}
               labelFormatter={(val) => format(parseISO(val as string), 'MMMM dd, yyyy')}
-              formatter={(value: number) => [`${value.toLocaleString()} MZN`, 'Volume']}
+              formatter={(value: any) => {
+                const numValue = typeof value === 'number' ? value : Number(value || 0);
+                return [`${numValue.toLocaleString()} MZN`, 'Volume'];
+              }}
             />
             <Area 
               type="monotone" 
@@ -71,7 +83,7 @@ export function VolumeChart({ data }: VolumeChartProps) {
               strokeWidth={3}
               fillOpacity={1} 
               fill="url(#colorVolume)" 
-              activeDot={{ r: 6, strokeWidth: 0, fill: '#422082' }}
+              activeDot={{ r: 6, strokeWidth: 0, fill: isDark ? '#c2ef4e' : '#422082' }}
             />
           </AreaChart>
         </ResponsiveContainer>

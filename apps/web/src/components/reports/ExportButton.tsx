@@ -25,7 +25,7 @@ export function ExportButton({ type }: ExportButtonProps) {
       // Create hidden link and trigger download
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `afin_${type}_report_${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute('download', `agbx_${type}_report_${new Date().toISOString().split('T')[0]}.csv`);
       document.body.appendChild(link);
       link.click();
       

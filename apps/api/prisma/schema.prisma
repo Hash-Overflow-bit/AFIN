@@ -22,6 +22,10 @@ model User {
   updatedAt        DateTime?          @default(now()) @map("updated_at") @db.Timestamptz(6)
   companyName      String?            @map("company_name") @db.VarChar(150)
   licenseNumber    String?            @map("license_number") @db.VarChar(100)
+  kycStatus        String             @default("INCOMPLETE") @map("kyc_status") @db.VarChar(20)
+  kycReviewedBy    String?            @map("kyc_reviewed_by") @db.Uuid
+  kycReviewedAt    DateTime?          @map("kyc_reviewed_at") @db.Timestamptz(6)
+  kycRejectionReason String?          @map("kyc_rejection_reason")
   activityLogs     ActivityLog[]
   allocations      Allocation[]       @relation("AllocationsBy")
   createdBonds     Bond[]             @relation("BondsCreatedBy")
@@ -52,17 +56,12 @@ model InvestorProfile {
   city               String?   @db.VarChar(100)
   country            String?   @default("Mozambique") @db.VarChar(100)
   postalCode         String?   @map("postal_code") @db.VarChar(20)
-  kycStatus          String    @default("PENDING") @map("kyc_status") @db.VarChar(20)
-  kycReviewedBy      String?   @map("kyc_reviewed_by") @db.Uuid
-  kycReviewedAt      DateTime? @map("kyc_reviewed_at") @db.Timestamptz(6)
-  kycRejectionReason String?   @map("kyc_rejection_reason")
   amlStatus          String?   @default("PENDING") @map("aml_status") @db.VarChar(20)
   createdAt          DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt          DateTime? @default(now()) @map("updated_at") @db.Timestamptz(6)
   user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId], map: "idx_investor_profiles_user")
-  @@index([kycStatus], map: "idx_investor_profiles_kyc")
   @@map("investor_profiles")
 }
 

@@ -8,12 +8,12 @@ export class OrdersService {
 
   async create(createOrderDto: CreateOrderDto, userId: string) {
     // 1. Check if user KYC is APPROVED
-    const investorProfile = await this.prisma.investorProfile.findUnique({
-      where: { userId },
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
     });
 
-    if (!investorProfile || investorProfile.kycStatus !== 'APPROVED') {
-      throw new ForbiddenException('Your KYC application must be approved to invest. Please submit your identity documents.');
+    if (!user || user.kycStatus !== 'APPROVED') {
+      throw new BadRequestException('Investor must be KYC verified to place an order');
     }
 
     // 2. Check Bond status and details

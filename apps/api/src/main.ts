@@ -1,3 +1,6 @@
+// Accept Supabase self-signed SSL certificates
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 import * as fs from 'fs';
 import * as path from 'path';
 

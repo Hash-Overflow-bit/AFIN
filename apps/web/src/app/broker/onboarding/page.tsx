@@ -70,7 +70,7 @@ export default function BrokerOnboardingPage() {
 
       {/* Header bar */}
       <header className="w-full flex items-center justify-between px-8 py-6 relative z-10 border-b border-white/5 bg-[#0a0514]/40 backdrop-blur-md">
-        <h1 className="font-logo text-white text-3xl font-bold tracking-wider">afin</h1>
+        <h1 className="font-logo text-white text-3xl font-bold tracking-wider">AGBX</h1>
         <button
           onClick={logout}
           className="flex items-center space-x-2 px-4 py-2 border border-white/10 hover:bg-white/5 rounded-full text-sm font-semibold text-slate-300 hover:text-white transition-all"

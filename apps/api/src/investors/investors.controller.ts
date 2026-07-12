@@ -10,7 +10,7 @@ import { Roles } from '../auth/decorators/roles.decorator';
 export class InvestorsController {
   constructor(private readonly investorsService: InvestorsService) {}
 
-  @Roles('INVESTOR')
+  @Roles('INVESTOR', 'BROKER')
   @Get('profile')
   getProfile(@Request() req) {
     // req.user is set by JwtAuthGuard
@@ -27,7 +27,7 @@ export class InvestorsController {
     return this.investorsService.updateProfile(req.user.id, updateProfileDto, ipAddress);
   }
 
-  @Roles('INVESTOR')
+  @Roles('INVESTOR', 'BROKER')
   @Post('submit-kyc')
   submitKyc(@Request() req) {
     return this.investorsService.submitKyc(req.user.id);

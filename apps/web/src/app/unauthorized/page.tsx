@@ -15,7 +15,7 @@ export default function UnauthorizedPage() {
     }
 
     if (user.role === 'INVESTOR') {
-      router.push('/portfolio');
+      router.push('/dashboard');
     } else if (user.role === 'BROKER') {
       router.push('/broker/dashboard');
     } else if (user.role === 'ADMIN') {

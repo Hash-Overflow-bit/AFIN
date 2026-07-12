@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: 'class',
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -59,23 +60,31 @@ const config: Config = {
         console: "0.2px",
       },
       keyframes: {
-        marquee: {
-          '0%': { transform: 'translateX(0%)' },
-          '100%': { transform: 'translateX(-50%)' },
+        "fade-in-up": {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        'fade-in-up': {
-          '0%': { opacity: '0', transform: 'translateY(20px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
+        "marquee": {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
         },
-        'pulse-soft': {
-          '0%, 100%': { opacity: '1' },
-          '50%': { opacity: '0.8' },
-        }
+        "draw-line": {
+          "to": { strokeDashoffset: "0" },
+        },
+        "glow-pulse": {
+          "0%, 100%": { opacity: "0.2", transform: "scale(1)" },
+          "50%": { opacity: "1", transform: "scale(1.5)", filter: "brightness(1.5)" },
+        },
+        "dash-flow": {
+          "to": { strokeDashoffset: "-20" },
+        },
       },
       animation: {
-        marquee: 'marquee 25s linear infinite',
-        'fade-in-up': 'fade-in-up 0.8s ease-out forwards',
-        'pulse-soft': 'pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        "fade-in-up": "fade-in-up 0.8s ease-out forwards",
+        "marquee": "marquee 25s linear infinite",
+        "draw-line": "draw-line 2s ease-out forwards",
+        "glow-pulse": "glow-pulse 3s infinite",
+        "dash-flow": "dash-flow 1s linear infinite",
       }
     },
   },

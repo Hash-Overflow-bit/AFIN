@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ConflictException, BadRequestException }
 import { PrismaService } from '../database/prisma.service';
 import { CreateUserAdminDto } from './dto/create-user-admin.dto';
 import { UpdateUserAdminDto } from './dto/update-user-admin.dto';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AdminService {
@@ -93,12 +93,13 @@ export class AdminService {
           phone: dto.phone,
           role: dto.role,
           status: 'ACTIVE',
+          kycStatus: 'PENDING',
           companyName: dto.role === 'BROKER' ? dto.companyName : null,
           licenseNumber: dto.role === 'BROKER' ? dto.licenseNumber : null,
           ...(dto.role === 'INVESTOR' ? {
             investorProfile: {
               create: {
-                kycStatus: 'PENDING',
+                country: 'Mozambique',
               },
             },
           } : {}),
@@ -141,9 +142,12 @@ export class AdminService {
     }
 
     return this.prisma.$transaction(async (tx) => {
+      const isActivating = dto.status === 'ACTIVE' && user.status !== 'ACTIVE';
+      
       const updatedUser = await tx.user.update({
         where: { id },
         data: {
+          ...(isActivating && { kycStatus: 'APPROVED' }),
           ...(dto.email && { email: dto.email }),
           ...(dto.firstName && { firstName: dto.firstName }),
           ...(dto.lastName && { lastName: dto.lastName }),

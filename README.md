@@ -1,8 +1,8 @@
-# AFIN — African Fixed Income Network
+# AGBX — African Government Bond Exchange
 
 ## Mozambique Government Bond Exchange Platform
 
-AFIN is a fintech infrastructure platform designed to modernize how government bonds are distributed, purchased, managed, and traded across Africa.
+AGBX is a fintech infrastructure platform designed to modernize how government bonds are distributed, purchased, managed, and traded across Africa.
 
 ### Phase 1 — Mozambique Broker Platform
 

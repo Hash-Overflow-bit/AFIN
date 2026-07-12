@@ -18,6 +18,33 @@ export class BondsService {
     });
   }
 
+  async findPublic() {
+    return this.prisma.bond.findMany({
+      where: {
+        status: {
+          in: ['OPEN', 'CLOSED'],
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        issuer: true,
+        couponRate: true,
+        yieldRate: true,
+        currency: true,
+        minInvestment: true,
+        maturityDate: true,
+        status: true,
+        couponFrequency: true,
+        totalIssuance: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 6,
+    });
+  }
+
   async findAll(query: BondQueryDto, userRole: string) {
     const { status, search, page = 1, limit = 10 } = query;
     const skip = (page - 1) * limit;
