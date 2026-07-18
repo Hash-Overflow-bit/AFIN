@@ -5,6 +5,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsToolti
 import { format, parseISO } from 'date-fns';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Tooltip } from './Tooltip';
+import { useTranslations } from 'next-intl';
 
 interface VolumeChartProps {
   data: {
@@ -14,13 +15,14 @@ interface VolumeChartProps {
 }
 
 export function VolumeChart({ data }: VolumeChartProps) {
+  const t = useTranslations("Analytics");
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
   if (!data || data.length === 0) {
     return (
       <div className="bg-white dark:bg-ink-deep border border-[#e5e7eb] dark:border-hairline-violet rounded-2xl p-6 h-full min-h-[400px] flex items-center justify-center shadow-sm">
-        <p className="text-[#79628c] dark:text-on-dark-muted">No volume data available.</p>
+        <p className="text-[#79628c] dark:text-on-dark-muted">{t('noVolumeData')}</p>
       </div>
     );
   }
@@ -29,10 +31,10 @@ export function VolumeChart({ data }: VolumeChartProps) {
     <div className="bg-white dark:bg-ink-deep border border-[#e5e7eb] dark:border-hairline-violet rounded-2xl p-6 shadow-sm h-full flex flex-col">
       <div className="mb-6">
         <div className="flex items-center">
-          <h3 className="text-[#1f1633] dark:text-white font-bold text-lg tracking-tight">Trading Volume</h3>
-          <Tooltip content="Shows the total aggregated requested amount of all orders placed over the last 30 days." />
+          <h3 className="text-[#1f1633] dark:text-white font-bold text-lg tracking-tight">{t('tradingVolume')}</h3>
+          <Tooltip content={t('volumeTooltip')} />
         </div>
-        <p className="text-[#79628c] dark:text-on-dark-muted text-sm mt-1">30-day aggregate requested volume</p>
+        <p className="text-[#79628c] dark:text-on-dark-muted text-sm mt-1">{t('volumeSubtitle')}</p>
       </div>
       <div className="flex-1 w-full min-h-[250px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -73,7 +75,7 @@ export function VolumeChart({ data }: VolumeChartProps) {
               labelFormatter={(val) => format(parseISO(val as string), 'MMMM dd, yyyy')}
               formatter={(value: any) => {
                 const numValue = typeof value === 'number' ? value : Number(value || 0);
-                return [`${numValue.toLocaleString()} MZN`, 'Volume'];
+                return [`${numValue.toLocaleString()} MZN`, t('volume')];
               }}
             />
             <Area 

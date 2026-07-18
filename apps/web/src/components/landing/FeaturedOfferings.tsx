@@ -2,7 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { TrendingUp, Calendar, Landmark, ChevronLeft, ChevronRight, ArrowRight, Clock } from "lucide-react";
+import { useTranslations } from 'next-intl';
+import { TrendingUp, Calendar, Landmark, ArrowRight, Clock, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface PublicBond {
   id: string;
@@ -77,126 +79,165 @@ function formatDate(dateStr: string): string {
   });
 }
 
-function BondCard({ bond, index, isVisible }: { bond: PublicBond; index: number; isVisible: boolean }) {
+function AnimatedBondRow({ bond, index, isVisible }: { bond: PublicBond; index: number; isVisible: boolean }) {
+  const t = useTranslations('Landing');
+  const [isExpanded, setIsExpanded] = useState(false);
   const isOpen = bond.status === "OPEN";
 
   return (
-    <Link href="/login">
-      <div
-        className={`group relative flex-shrink-0 w-[320px] md:w-[360px] bg-[#110b1f] border border-white/5 rounded-2xl p-6 md:p-7 transition-all duration-500 hover:-translate-y-2 hover:border-accent-violet/40 hover:shadow-[0_0_40px_rgba(106,95,193,0.15)] cursor-pointer ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
-        style={{ transitionDelay: `${0.1 + index * 0.12}s` }}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={isVisible ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      className={`w-full group rounded-2xl border transition-all duration-300 overflow-hidden ${
+        isExpanded 
+          ? 'bg-[#1a1325] border-accent-violet/50 shadow-[0_0_30px_rgba(152,143,222,0.15)]' 
+          : 'bg-[#110b1f] border-white/10 hover:border-white/20 hover:bg-[#150e26]'
+      }`}
+    >
+      <div 
+        className="px-6 py-5 cursor-pointer flex flex-col md:flex-row md:items-center gap-4"
+        onClick={() => setIsExpanded(!isExpanded)}
       >
-        {/* Status Badge */}
-        <div className="flex items-center justify-between mb-5">
-          <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-            isOpen
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-              : 'bg-white/5 text-on-dark-muted border border-white/10'
-          }`}>
-            <div className={`w-1.5 h-1.5 rounded-full ${isOpen ? 'bg-emerald-400 animate-pulse' : 'bg-gray-500'}`} />
-            {isOpen ? "Open" : "Closed"}
+        {/* Left: Status & Name */}
+        <div className="flex items-center gap-4 flex-1">
+          <div className="relative flex items-center justify-center w-3 h-3">
+            {isOpen && <span className="absolute w-full h-full bg-accent-lime rounded-full animate-ping opacity-50" />}
+            <span className={`relative w-2 h-2 rounded-full ${isOpen ? 'bg-accent-lime' : 'bg-white/20'}`} />
           </div>
-          <ArrowRight className="w-4 h-4 text-white/20 group-hover:text-accent-lime group-hover:translate-x-1 transition-all duration-300" />
+          <div>
+            <h4 className="text-white font-bold text-lg md:text-xl">{bond.name}</h4>
+            <p className="text-slate-400 text-sm flex items-center gap-1.5 mt-1">
+              <Landmark className="w-3.5 h-3.5" />
+              {bond.issuer}
+            </p>
+          </div>
         </div>
 
-        {/* Bond Name & Issuer */}
-        <h4 className="text-white font-bold text-lg mb-1 group-hover:text-accent-lime transition-colors duration-300">{bond.name}</h4>
-        <p className="text-on-dark-muted text-sm mb-6 flex items-center gap-1.5">
-          <Landmark className="w-3.5 h-3.5" />
-          {bond.issuer}
-        </p>
-
-        {/* Coupon Rate (Hero Number) */}
-        <div className="bg-white/[0.03] rounded-xl p-4 mb-5 border border-white/5">
-          <div className="flex items-end justify-between">
-            <div>
-              <p className="text-on-dark-muted text-xs uppercase tracking-widest mb-1">Coupon Rate</p>
-              <p className="text-accent-lime text-3xl font-bold tracking-tight">
-                {Number(bond.couponRate).toFixed(1)}
-                <span className="text-lg text-accent-lime/70">%</span>
-              </p>
-            </div>
+        {/* Middle: Rates */}
+        <div className="flex items-center gap-6 md:gap-12 lg:gap-16 flex-shrink-0 mt-4 md:mt-0">
+          <div className="text-left w-20 lg:w-24">
+            <p className="text-slate-500 text-[10px] md:text-xs uppercase tracking-widest font-semibold mb-0.5">{t('couponRate')}</p>
+            <p className="text-accent-violet text-xl md:text-2xl font-bold tracking-tight">
+              {Number(bond.couponRate).toFixed(1)}<span className="text-sm text-accent-violet/70">%</span>
+            </p>
+          </div>
+          <div className="text-left w-20 lg:w-24 hidden sm:block">
             {bond.yieldRate && (
-              <div className="text-right">
-                <p className="text-on-dark-muted text-xs uppercase tracking-widest mb-1">Yield</p>
-                <p className="text-accent-pink text-lg font-bold">
-                  {Number(bond.yieldRate).toFixed(1)}%
+              <>
+                <p className="text-slate-500 text-[10px] md:text-xs uppercase tracking-widest font-semibold mb-0.5">{t('yield')}</p>
+                <p className="text-accent-lime text-xl md:text-2xl font-bold tracking-tight">
+                  {Number(bond.yieldRate).toFixed(1)}<span className="text-sm text-accent-lime/70">%</span>
                 </p>
-              </div>
+              </>
             )}
           </div>
+          <div className="text-left w-24">
+             <div className={`text-xs md:text-sm font-bold uppercase tracking-wider ${isOpen ? 'text-white' : 'text-slate-500'} md:mt-4`}>
+                {isOpen ? t('statusOpen') : t('statusClosed')}
+             </div>
+          </div>
         </div>
-
-        {/* Details Grid */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="flex items-center gap-2 text-sm">
-            <Calendar className="w-3.5 h-3.5 text-accent-violet flex-shrink-0" />
-            <div>
-              <p className="text-on-dark-muted text-[10px] uppercase tracking-wider">Maturity</p>
-              <p className="text-white font-medium text-xs">{formatDate(bond.maturityDate)}</p>
-            </div>
+        
+        {/* Right: Expand Icon */}
+        <div className="hidden md:flex items-center justify-center w-8 ml-4 flex-shrink-0">
+          <div className={`p-2 rounded-full transition-all duration-300 ${isExpanded ? 'bg-accent-violet/20 text-accent-violet rotate-180' : 'bg-white/5 text-slate-400 group-hover:bg-white/10 group-hover:text-white'}`}>
+            <ChevronDown className="w-5 h-5" />
           </div>
-          <div className="flex items-center gap-2 text-sm">
-            <TrendingUp className="w-3.5 h-3.5 text-accent-violet flex-shrink-0" />
-            <div>
-              <p className="text-on-dark-muted text-[10px] uppercase tracking-wider">Min. Investment</p>
-              <p className="text-white font-medium text-xs">{formatCurrency(Number(bond.minInvestment), bond.currency)}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Clock className="w-3.5 h-3.5 text-accent-violet flex-shrink-0" />
-            <div>
-              <p className="text-on-dark-muted text-[10px] uppercase tracking-wider">Frequency</p>
-              <p className="text-white font-medium text-xs">{bond.couponFrequency === "SEMI_ANNUAL" ? "Semi-Annual" : bond.couponFrequency === "ANNUAL" ? "Annual" : bond.couponFrequency}</p>
-            </div>
-          </div>
-          {bond.totalIssuance && (
-            <div className="flex items-center gap-2 text-sm">
-              <Landmark className="w-3.5 h-3.5 text-accent-violet flex-shrink-0" />
-              <div>
-                <p className="text-on-dark-muted text-[10px] uppercase tracking-wider">Issuance</p>
-                <p className="text-white font-medium text-xs">{formatCurrency(Number(bond.totalIssuance), bond.currency)}</p>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Bottom CTA hint */}
-        <div className="mt-5 pt-4 border-t border-white/5 flex items-center justify-center gap-2 text-on-dark-muted text-xs group-hover:text-accent-lime transition-colors">
-          <span>Sign in to invest</span>
-          <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
         </div>
       </div>
-    </Link>
+
+      {/* Expanded Details */}
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="border-t border-white/10"
+          >
+            <div className="p-6 md:p-8 bg-black/20 flex flex-col lg:flex-row gap-8 justify-between">
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 flex-1">
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-accent-violet">
+                    <Calendar className="w-4 h-4" />
+                    <p className="text-slate-400 font-semibold text-xs uppercase tracking-wider">{t('maturity')}</p>
+                  </div>
+                  <p className="text-white font-medium text-sm pl-5.5">{formatDate(bond.maturityDate)}</p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-accent-violet">
+                    <TrendingUp className="w-4 h-4" />
+                    <p className="text-slate-400 font-semibold text-xs uppercase tracking-wider">{t('minInvestment')}</p>
+                  </div>
+                  <p className="text-white font-medium text-sm pl-5.5">{formatCurrency(Number(bond.minInvestment), bond.currency)}</p>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-accent-violet">
+                    <Clock className="w-4 h-4" />
+                    <p className="text-slate-400 font-semibold text-xs uppercase tracking-wider">{t('frequency')}</p>
+                  </div>
+                  <p className="text-white font-medium text-sm pl-5.5">{bond.couponFrequency === "SEMI_ANNUAL" ? t('semiAnnual') : bond.couponFrequency === "ANNUAL" ? t('annual') : bond.couponFrequency}</p>
+                </div>
+
+                {bond.totalIssuance && (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-1.5 text-accent-violet">
+                      <Landmark className="w-4 h-4" />
+                      <p className="text-slate-400 font-semibold text-xs uppercase tracking-wider">{t('issuance')}</p>
+                    </div>
+                    <p className="text-white font-medium text-sm pl-5.5">{formatCurrency(Number(bond.totalIssuance), bond.currency)}</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex-shrink-0 flex items-end justify-start lg:justify-end mt-4 lg:mt-0">
+                <Link
+                  href="/register"
+                  className="inline-flex items-center justify-center gap-2 bg-accent-violet hover:bg-[#422082] text-white rounded-xl px-8 py-3.5 font-bold uppercase tracking-wider text-sm transition-all hover:shadow-[0_0_20px_rgba(106,95,193,0.4)] group"
+                >
+                  {t('signInToInvest')}
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </div>
+
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 
-function SkeletonCard() {
+function SkeletonRow() {
   return (
-    <div className="flex-shrink-0 w-[320px] md:w-[360px] bg-[#110b1f] border border-white/5 rounded-2xl p-6 md:p-7 animate-pulse">
-      <div className="flex justify-between mb-5">
-        <div className="w-16 h-6 bg-white/5 rounded-full" />
-        <div className="w-4 h-4 bg-white/5 rounded" />
+    <div className="w-full bg-[#110b1f] border border-white/5 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 animate-pulse">
+      <div className="flex items-center gap-4 flex-1">
+        <div className="w-3 h-3 bg-white/10 rounded-full" />
+        <div>
+          <div className="w-48 h-6 bg-white/10 rounded mb-2" />
+          <div className="w-32 h-4 bg-white/5 rounded" />
+        </div>
       </div>
-      <div className="w-3/4 h-5 bg-white/5 rounded mb-2" />
-      <div className="w-1/2 h-4 bg-white/5 rounded mb-6" />
-      <div className="bg-white/[0.03] rounded-xl p-4 mb-5 border border-white/5">
-        <div className="w-24 h-9 bg-white/5 rounded" />
+      <div className="flex items-center gap-16 flex-shrink-0">
+        <div className="w-16 h-8 bg-white/10 rounded" />
+        <div className="w-16 h-8 bg-white/10 rounded hidden sm:block" />
+        <div className="w-20 h-5 bg-white/5 rounded" />
       </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="w-full h-8 bg-white/5 rounded" />
-        <div className="w-full h-8 bg-white/5 rounded" />
-      </div>
+      <div className="w-8 h-8 bg-white/5 rounded-full" />
     </div>
   );
 }
 
 export default function FeaturedOfferings() {
+  const t = useTranslations('Landing');
   const [bonds, setBonds] = useState<PublicBond[]>([]);
   const [loading, setLoading] = useState(true);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
 
   // Scroll-reveal observer
   useEffect(() => {
@@ -235,87 +276,64 @@ export default function FeaturedOfferings() {
     fetchBonds();
   }, []);
 
-  const scroll = (direction: "left" | "right") => {
-    if (scrollRef.current) {
-      const scrollAmount = 380;
-      scrollRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
-  };
-
   return (
     <section
       id="offerings"
       ref={sectionRef}
-      className="w-full py-20 md:py-28 relative z-20 overflow-hidden"
-      style={{ backgroundColor: '#0a0514' }}
+      className="w-full py-24 md:py-32 relative z-20 overflow-hidden bg-[#0a0514] border-t border-white/5"
     >
       {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 right-[20%] w-[500px] h-[500px] bg-[#6a5fc1]/5 rounded-full blur-[150px]" />
-        <div className="absolute bottom-0 left-[10%] w-[400px] h-[400px] bg-[#fa7faa]/5 rounded-full blur-[120px]" />
+        <div className="absolute top-0 left-[20%] w-[500px] h-[500px] bg-accent-violet/5 rounded-full blur-[150px]" />
+        <div className="absolute bottom-0 right-[10%] w-[400px] h-[400px] bg-accent-lime/5 rounded-full blur-[120px]" />
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-6 md:px-8 relative z-10">
+      <div className="max-w-[1200px] mx-auto px-6 md:px-8 relative z-10">
         {/* Section Header */}
-        <div className={`flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-14 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-          <div>
-            <h2 className="text-accent-violet font-bold tracking-widest uppercase text-sm mb-3">Featured Offerings</h2>
-            <h3 className="font-display text-3xl md:text-4xl lg:text-5xl font-extrabold text-white mb-3">
-              Current Bond Issuances
-            </h3>
-            <p className="text-on-dark-muted text-base md:text-lg max-w-xl">
-              Explore active and recent government bond offerings. Sign in to subscribe and invest.
-            </p>
-          </div>
-
-          {/* Scroll controls (desktop) */}
-          <div className="hidden md:flex items-center gap-3 mt-6 md:mt-0">
-            <button
-              onClick={() => scroll("left")}
-              className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-accent-violet/40 transition-all"
-              aria-label="Scroll left"
-            >
-              <ChevronLeft className="w-5 h-5 text-white/70" />
-            </button>
-            <button
-              onClick={() => scroll("right")}
-              className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 hover:border-accent-violet/40 transition-all"
-              aria-label="Scroll right"
-            >
-              <ChevronRight className="w-5 h-5 text-white/70" />
-            </button>
-          </div>
+        <div className={`flex flex-col items-center text-center mb-16 md:mb-20 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+          <h2 className="text-accent-lime font-bold tracking-widest uppercase text-sm mb-4">{t('offeringsSubtitle')}</h2>
+          <h3 className="font-display text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4">
+            {t('offeringsTitle')}
+          </h3>
+          <p className="text-white/60 text-lg max-w-2xl mx-auto">
+            {t('offeringsDesc')}
+          </p>
         </div>
 
-        {/* Cards Scrollable Container */}
-        <div
-          ref={scrollRef}
-          className="flex gap-5 md:gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-        >
+        {/* Market Terminal Stack */}
+        <div className="flex flex-col gap-4">
+          {/* Header Row (Desktop Only) */}
+          <div className={`hidden md:flex items-center px-6 pb-2 border-b border-white/10 transition-all duration-700 delay-200 gap-4 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+            <div className="flex-1 text-slate-500 text-xs font-bold uppercase tracking-widest">{t('colAssetIssuer')}</div>
+            <div className="flex items-center gap-6 md:gap-12 lg:gap-16 flex-shrink-0">
+              <div className="w-20 lg:w-24 text-slate-500 text-xs font-bold uppercase tracking-widest">{t('colCoupon')}</div>
+              <div className="w-20 lg:w-24 text-slate-500 text-xs font-bold uppercase tracking-widest hidden sm:block">{t('colYield')}</div>
+              <div className="w-24 text-slate-500 text-xs font-bold uppercase tracking-widest">{t('colStatus')}</div>
+            </div>
+            {/* Spacer for the Chevron icon */}
+            <div className="w-8 ml-4 flex-shrink-0"></div>
+          </div>
+
           {loading ? (
             <>
-              <SkeletonCard />
-              <SkeletonCard />
-              <SkeletonCard />
+              <SkeletonRow />
+              <SkeletonRow />
+              <SkeletonRow />
             </>
           ) : (
             bonds.map((bond, index) => (
-              <BondCard key={bond.id} bond={bond} index={index} isVisible={isVisible} />
+              <AnimatedBondRow key={bond.id} bond={bond} index={index} isVisible={isVisible} />
             ))
           )}
         </div>
 
         {/* Bottom CTA */}
-        <div className={`text-center mt-10 md:mt-14 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`} style={{ transitionDelay: '0.5s' }}>
+        <div className={`text-center mt-12 md:mt-16 transition-all duration-700 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
           <Link
             href="/register"
-            className="inline-flex items-center gap-2 bg-surface-night border border-hairline-violet text-on-primary rounded-full px-8 py-3.5 font-bold uppercase tracking-console text-sm hover:bg-accent-violet-deep hover:border-accent-violet transition-all group"
+            className="inline-flex items-center gap-2 bg-transparent border border-white/20 text-white rounded-full px-8 py-3.5 font-bold uppercase tracking-wider text-sm hover:border-accent-lime hover:text-accent-lime transition-all duration-300 group"
           >
-            Create Account to Invest
+            {t('createAccountToInvest')}
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>

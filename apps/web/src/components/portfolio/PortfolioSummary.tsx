@@ -4,12 +4,14 @@ import { motion } from 'framer-motion';
 import CountUp from 'react-countup';
 import { PortfolioSummary as SummaryType } from '@/lib/api/portfolio';
 import { Wallet, PieChart, TrendingUp } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface Props {
   summary: SummaryType;
 }
 
 export default function PortfolioSummary({ summary }: Props) {
+  const t = useTranslations("Portfolio");
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <motion.div
@@ -23,7 +25,7 @@ export default function PortfolioSummary({ summary }: Props) {
           <Wallet size={120} />
         </div>
         <p className="text-[#79628c] dark:text-on-dark-muted font-medium text-xs tracking-widest uppercase mb-3 flex items-center gap-2">
-          <Wallet size={14} /> Total Invested
+          <Wallet size={14} /> {t('totalInvested')}
         </p>
         <h3 className="text-4xl md:text-5xl font-bold text-[#1f1633] dark:text-white tracking-tight">
           <CountUp
@@ -46,7 +48,7 @@ export default function PortfolioSummary({ summary }: Props) {
           <PieChart size={120} />
         </div>
         <p className="text-[#79628c] dark:text-on-dark-muted font-medium text-xs tracking-widest uppercase mb-3 flex items-center gap-2">
-          <PieChart size={14} /> Active Holdings
+          <PieChart size={14} /> {t('activeHoldings')}
         </p>
         <h3 className="text-4xl md:text-5xl font-bold text-[#1f1633] dark:text-white tracking-tight">
           <CountUp
@@ -67,7 +69,7 @@ export default function PortfolioSummary({ summary }: Props) {
           <TrendingUp size={120} />
         </div>
         <p className="text-[#6a5fc1] dark:text-accent-lime font-medium text-xs tracking-widest uppercase mb-3 flex items-center gap-2">
-          <TrendingUp size={14} /> Average Yield
+          <TrendingUp size={14} /> {t('averageYield')}
         </p>
         <h3 className="text-4xl md:text-5xl font-bold text-[#422082] dark:text-accent-lime tracking-tight">
           <CountUp

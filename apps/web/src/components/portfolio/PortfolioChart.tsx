@@ -5,12 +5,14 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import { CouponPayment } from '@/lib/api/portfolio';
 
 import { useTheme } from '@/contexts/ThemeContext';
+import { useTranslations } from 'next-intl';
 
 interface Props {
   coupons: CouponPayment[];
 }
 
 export default function PortfolioChart({ coupons }: Props) {
+  const t = useTranslations("Portfolio");
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
@@ -40,7 +42,7 @@ export default function PortfolioChart({ coupons }: Props) {
       transition={{ delay: 0.4 }}
       className="bg-white dark:bg-ink-deep border border-[#e5e7eb] dark:border-hairline-violet rounded-2xl p-6 shadow-sm"
     >
-      <h3 className="text-lg font-bold text-[#1f1633] dark:text-white mb-6">Projected Coupon Cashflows</h3>
+      <h3 className="text-lg font-bold text-[#1f1633] dark:text-white mb-6">{t('projectedCashflows')}</h3>
       <div className="h-[300px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>

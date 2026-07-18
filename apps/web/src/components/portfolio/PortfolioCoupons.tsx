@@ -3,12 +3,14 @@
 import { motion } from 'framer-motion';
 import { CouponPayment } from '@/lib/api/portfolio';
 import { Calendar } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface Props {
   coupons: CouponPayment[];
 }
 
 export default function PortfolioCoupons({ coupons }: Props) {
+  const t = useTranslations('Portfolio');
   const formatter = new Intl.NumberFormat('en-MZ', { style: 'currency', currency: 'MZN' });
 
   return (
@@ -20,12 +22,12 @@ export default function PortfolioCoupons({ coupons }: Props) {
       className="bg-white dark:bg-ink-deep border border-[#e5e7eb] dark:border-hairline-violet rounded-2xl p-6 h-full shadow-sm"
     >
       <h3 className="text-lg font-bold text-[#1f1633] dark:text-white mb-6 flex items-center gap-2">
-        <Calendar size={20} className="text-[#6a5fc1] dark:text-accent-lime" /> Upcoming Coupons
+        <Calendar size={20} className="text-[#6a5fc1] dark:text-accent-lime" /> {t('upcomingCoupons')}
       </h3>
       
       <div className="space-y-4">
         {coupons.length === 0 ? (
-          <p className="text-[#79628c] dark:text-on-dark-muted text-sm">No scheduled coupons.</p>
+          <p className="text-[#79628c] dark:text-on-dark-muted text-sm">{t('noCoupons')}</p>
         ) : (
           coupons.slice(0, 5).map((coupon, i) => (
             <div key={coupon.id} className="flex justify-between items-center p-3 rounded-xl bg-[#f9fafb] dark:bg-[#1a1130] border border-[#e5e7eb] dark:border-hairline-violet hover:bg-white dark:hover:bg-[#1f1735]/40 transition-colors">

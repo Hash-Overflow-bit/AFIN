@@ -47,3 +47,5 @@ Always consult these blueprints before building major modules:
 - [x] Task 7.2: Reports Module
 - [x] UI Polish: Logo Redesign & Landing Page Enhancements
 - [x] Task 10.1: E2E Testing
+- [x] Task 10.2: Platform Localization (next-intl)
+- [x] Task 10.3: UI Translations (Investor, Broker, Admin portals fully localized)

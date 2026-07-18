@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Rubik, Quicksand } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { NotificationProvider } from '@/contexts/NotificationContext';
-import { ThemeProvider } from '@/contexts/ThemeContext';
 
 const rubik = Rubik({
   subsets: ["latin"],
@@ -28,15 +25,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html>
       <body className={`${rubik.variable} ${quicksand.variable} font-sans antialiased min-h-screen bg-[#ffffff] dark:bg-[#0a0514] text-[#1f1633] dark:text-[#ffffff] transition-colors duration-200`}>
-        <ThemeProvider>
-          <AuthProvider>
-            <NotificationProvider>
-              {children}
-            </NotificationProvider>
-          </AuthProvider>
-        </ThemeProvider>
+        {children}
       </body>
     </html>
   );

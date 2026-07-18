@@ -32,7 +32,10 @@ export function KPICard({ title, value, icon: Icon, prefix = '', suffix = '', to
         </p>
         {tooltip && <Tooltip content={tooltip} />}
       </div>
-      <h3 className="text-4xl md:text-5xl font-bold text-[#1f1633] dark:text-white tracking-tight relative z-10">
+      <h3 
+        className="text-3xl lg:text-4xl font-bold text-[#1f1633] dark:text-white tracking-tight relative z-10 truncate"
+        title={`${prefix}${value.toLocaleString()}${suffix}`}
+      >
         <CountUp
           end={value}
           duration={2}

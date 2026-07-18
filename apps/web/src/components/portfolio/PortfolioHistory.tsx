@@ -3,12 +3,14 @@
 import { motion } from 'framer-motion';
 import { ActivityLog } from '@/lib/api/portfolio';
 import { Clock } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface Props {
   history: ActivityLog[];
 }
 
 export default function PortfolioHistory({ history }: Props) {
+  const t = useTranslations('Portfolio');
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
@@ -18,12 +20,12 @@ export default function PortfolioHistory({ history }: Props) {
       className="bg-white dark:bg-ink-deep border border-[#e5e7eb] dark:border-hairline-violet rounded-2xl p-6 h-full shadow-sm"
     >
       <h3 className="text-lg font-bold text-[#1f1633] dark:text-white mb-6 flex items-center gap-2">
-        <Clock size={20} className="text-[#6a5fc1] dark:text-accent-lime" /> Recent Activity
+        <Clock size={20} className="text-[#6a5fc1] dark:text-accent-lime" /> {t('recentActivity')}
       </h3>
       
       <div className="relative border-l border-[#e5e7eb] dark:border-hairline-violet ml-3 space-y-6">
         {history.length === 0 ? (
-          <p className="text-[#79628c] dark:text-on-dark-muted text-sm ml-4">No recent activity.</p>
+          <p className="text-[#79628c] dark:text-on-dark-muted text-sm ml-4">{t('noActivity')}</p>
         ) : (
           history.slice(0, 10).map((log, i) => (
             <div key={log.id} className="relative pl-6">

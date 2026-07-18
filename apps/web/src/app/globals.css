@@ -9,6 +9,7 @@
 }
 
 @layer components {
+
   /* Buttons */
   .btn-primary {
     @apply inline-flex items-center justify-center bg-primary text-on-primary font-bold uppercase tracking-console text-[14px] leading-[1.14] rounded-md px-4 py-3 transition-colors hover:bg-surface-press-stronger hover:text-ink-press disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-hairline-cloud disabled:text-on-dark-muted;
@@ -21,14 +22,14 @@
   .btn-ghost-dark {
     @apply inline-flex items-center justify-center bg-on-dark-faint text-on-primary font-medium uppercase tracking-console text-[14px] leading-[1.29] rounded-xl px-2 py-2 transition-colors hover:bg-on-dark-muted hover:text-ink;
   }
-  
+
   .btn-violet {
     @apply inline-flex items-center justify-center bg-accent-violet-mid text-on-primary font-medium uppercase tracking-console text-[14px] leading-[1.29] rounded-xl px-4 py-2 border border-accent-violet transition-colors hover:bg-accent-violet-deep;
   }
 
   /* Inputs */
   .input-text {
-    @apply bg-surface-canvas-light text-ink-deep font-medium text-[16px] leading-[1.5] rounded-sm px-3 py-2 border border-hairline-cool outline-none transition-shadow focus:shadow-[inset_0_2px_10px_rgba(0,0,0,0.15)] focus:border-ring-focus;
+    @apply bg-surface-canvas-light text-ink-deep font-medium text-[16px] leading-[1.5] rounded-sm px-3 py-2 border border-hairline-cool outline-none transition-shadow focus:shadow-[inset_0_2px_10px_rgba(0, 0, 0, 0.15)] focus:border-ring-focus;
   }
 
   .input-label {
@@ -39,7 +40,7 @@
   .card-spotlight {
     @apply bg-accent-violet-deep text-on-primary rounded-xxl p-8 shadow-level-2;
   }
-  
+
   .card-night {
     @apply bg-surface-night text-on-primary rounded-xxl p-8 border border-hairline-violet;
   }
