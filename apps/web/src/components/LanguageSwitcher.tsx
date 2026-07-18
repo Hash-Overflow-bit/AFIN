@@ -1,42 +1,50 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import { usePathname } from 'next/navigation';
-import { Globe } from 'lucide-react';
+import { usePathname, useRouter } from '../navigation';
+import { useParams } from 'next/navigation';
+import { Globe, Loader2 } from 'lucide-react';
+import { useTransition, useState, useEffect } from 'react';
 
 export default function LanguageSwitcher() {
-  const locale = useLocale();
+  const currentLocale = useLocale();
+  const [displayLocale, setDisplayLocale] = useState(currentLocale);
+  const router = useRouter();
   const pathname = usePathname();
+  const params = useParams();
+  const [isPending, startTransition] = useTransition();
+
+  // Sync state if locale changes externally
+  useEffect(() => {
+    setDisplayLocale(currentLocale);
+  }, [currentLocale]);
 
   const toggleLocale = () => {
-    const nextLocale = locale === 'pt' ? 'en' : 'pt';
+    const nextLocale = displayLocale === 'pt' ? 'en' : 'pt';
+    setDisplayLocale(nextLocale);
     
-    // Explicitly set the cookie so next-intl middleware respects the new language
-    document.cookie = `NEXT_LOCALE=${nextLocale}; path=/; max-age=31536000`;
+    // Explicitly set cookie so next-intl middleware persists preference
+    document.cookie = `NEXT_LOCALE=${nextLocale}; path=/; max-age=31536000; SameSite=Lax`;
     
-    // Strip current locale prefix if present
-    let pathWithoutLocale = pathname;
-    if (pathname.startsWith('/pt')) {
-      pathWithoutLocale = pathname.replace(/^\/pt/, '') || '/';
-    } else if (pathname.startsWith('/en')) {
-      pathWithoutLocale = pathname.replace(/^\/en/, '') || '/';
-    }
-
-    // Build new path: default locale (pt) has no prefix, en gets /en prefix
-    const newPath = nextLocale === 'pt' 
-      ? pathWithoutLocale 
-      : `/en${pathWithoutLocale}`;
-    
-    window.location.href = newPath;
+    startTransition(() => {
+      router.replace(
+        // @ts-expect-error - next-intl dynamic route types
+        { pathname, params },
+        { locale: nextLocale }
+      );
+    });
   };
 
   return (
     <button
       onClick={toggleLocale}
-      className="flex items-center space-x-2 text-sm font-semibold text-slate-300 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-full"
+      disabled={isPending}
+      className={`flex items-center space-x-2 text-sm font-semibold transition-colors rounded-full px-3 py-1.5 ${
+        isPending ? 'opacity-50 cursor-not-allowed bg-white/5 text-slate-400' : 'text-slate-300 hover:text-white bg-white/5 hover:bg-white/10'
+      }`}
     >
-      <Globe className="w-4 h-4" />
-      <span>{locale === 'pt' ? 'PT' : 'EN'}</span>
+      {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Globe className="w-4 h-4" />}
+      <span>{displayLocale === 'pt' ? 'PT' : 'EN'}</span>
     </button>
   );
 }

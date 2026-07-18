@@ -74,7 +74,7 @@ export default function BrokerOnboardingPage() {
             className="flex items-center space-x-2 px-5 py-2.5 border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 rounded-full text-sm font-semibold text-white transition-all group"
           >
             <LogOut className="w-4 h-4 text-slate-400 group-hover:text-white transition-colors" />
-            <span>{tNav('logout')}</span>
+            <span>{tNav('btnLogout')}</span>
           </button>
         </div>
       </header>
