@@ -72,8 +72,33 @@ export default function InvestorReviewPage({ params }: { params: { id: string } 
     return <div className="text-red-500">{t('notFound')}</div>;
   }
 
-  const { profile, documents } = data;
+  const { profile, documents, employmentVerification } = data;
   const user = profile.user;
+
+  const handleApproveVerification = async () => {
+    try {
+      await api.patch(`/admin/employment-verification/${employmentVerification.id}`, {
+        status: 'APPROVED'
+      });
+      fetchInvestorData();
+    } catch (e: any) {
+      alert(e.response?.data?.message || 'Failed to approve verification');
+    }
+  };
+
+  const handleRejectVerification = async () => {
+    const reason = window.prompt("Reason for rejection:");
+    if (!reason) return;
+    try {
+      await api.patch(`/admin/employment-verification/${employmentVerification.id}`, {
+        status: 'REJECTED',
+        notes: reason
+      });
+      fetchInvestorData();
+    } catch (e: any) {
+      alert(e.response?.data?.message || 'Failed to reject verification');
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -178,6 +203,77 @@ export default function InvestorReviewPage({ params }: { params: { id: string } 
           )}
         </div>
       </div>
+
+      {/* Employment Verification Module */}
+      {employmentVerification && (
+        <div className="bg-surface-canvas-light border border-hairline-cloud rounded-[12px] p-[32px] mb-8">
+          <h3 className="text-[20px] font-semibold mb-6 flex items-center justify-between">
+            Employment Verification
+            <span className={`text-[12px] px-3 py-1 rounded-full font-bold uppercase tracking-wider ${
+              employmentVerification.status === 'APPROVED' ? 'bg-accent-lime text-ink' :
+              employmentVerification.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+              'bg-surface-press text-ink'
+            }`}>
+              {employmentVerification.status.replace('_', ' ')}
+            </span>
+          </h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+            <dl className="space-y-4">
+              <div>
+                <dt className="text-[12px] uppercase tracking-wider text-ink/50 font-bold mb-1">Employer Name</dt>
+                <dd className="text-[16px] font-medium">{employmentVerification.employerName}</dd>
+              </div>
+              <div>
+                <dt className="text-[12px] uppercase tracking-wider text-ink/50 font-bold mb-1">Employer Email</dt>
+                <dd className="text-[16px] font-medium">{employmentVerification.employerEmail}</dd>
+              </div>
+            </dl>
+            <dl className="space-y-4">
+              <div>
+                <dt className="text-[12px] uppercase tracking-wider text-ink/50 font-bold mb-1">Job Title</dt>
+                <dd className="text-[16px] font-medium">{employmentVerification.jobTitle}</dd>
+              </div>
+              <div>
+                <dt className="text-[12px] uppercase tracking-wider text-ink/50 font-bold mb-1">Contact Name</dt>
+                <dd className="text-[16px] font-medium">{employmentVerification.contactName || 'N/A'}</dd>
+              </div>
+            </dl>
+          </div>
+
+          {employmentVerification.documentPath && (
+            <div className="bg-surface-canvas border border-hairline-cloud p-4 rounded-[8px] mb-6 flex items-center justify-between">
+              <div>
+                <p className="text-[14px] font-bold">{employmentVerification.documentName}</p>
+                <p className="text-[12px] text-ink/60">Uploaded Document</p>
+              </div>
+              <button className="text-accent-violet hover:text-accent-violet-deep text-[14px] font-bold" onClick={() => alert('MVP: Download path ' + employmentVerification.documentPath)}>
+                Download
+              </button>
+            </div>
+          )}
+
+          {employmentVerification.status === 'PENDING_REVIEW' && (
+            <div className="flex gap-4 mb-6">
+              <button onClick={handleApproveVerification} className="px-4 py-2 bg-accent-lime text-ink font-bold rounded-lg hover:bg-[#aade38]">Approve Verification</button>
+              <button onClick={handleRejectVerification} className="px-4 py-2 border border-red-500 text-red-500 font-bold rounded-lg hover:bg-red-50">Reject</button>
+            </div>
+          )}
+
+          {/* Audit Logs */}
+          <div>
+            <h4 className="text-[14px] font-bold uppercase tracking-wider text-ink/50 mb-3">Audit Trail</h4>
+            <div className="space-y-2">
+              {employmentVerification.auditLogs.map((log: any) => (
+                <div key={log.id} className="text-[13px] bg-surface-canvas p-3 rounded-lg border border-hairline-cloud flex justify-between">
+                  <span><strong className="text-ink">{log.action.replace('_', ' ')}</strong> - {log.notes}</span>
+                  <span className="text-ink/50">{new Date(log.createdAt).toLocaleString()}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Action Panel */}
       {profile.kycStatus === 'DOCUMENTS_SUBMITTED' && (

@@ -7,12 +7,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { NotificationBell } from '@/components/layout/NotificationBell';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Sun, Moon, Menu, X } from 'lucide-react';
+import { Sun, Moon, Menu, X, Lock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 export default function InvestorLayout({ children }: { children: React.ReactNode }) {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -26,8 +26,11 @@ export default function InvestorLayout({ children }: { children: React.ReactNode
     { name: t('navProfile'), path: '/profile' },
   ];
 
+  const kycStatus = user?.investorProfile?.kycStatus || user?.kycStatus;
+  const isKycApproved = kycStatus === 'APPROVED';
+
   return (
-    <ProtectedRoute requiredRoles={['INVESTOR']}>
+    <ProtectedRoute requiredRoles={['INVESTOR']} enforceKyc={true}>
       <div className="min-h-screen bg-[#ffffff] dark:bg-[#0a0514] text-[#1f1633] dark:text-white font-sans transition-colors duration-200">
         <header className="bg-[#ffffff] dark:bg-[#0a0514]/90 dark:backdrop-blur-md border-b border-[#e5e7eb] dark:border-hairline-violet px-[24px] py-[16px] sticky top-0 z-40">
           <div className="max-w-[1440px] mx-auto flex items-center justify-between">
@@ -39,6 +42,21 @@ export default function InvestorLayout({ children }: { children: React.ReactNode
               <nav className="hidden md:flex gap-1">
                 {navItems.map((item) => {
                   const isActive = pathname.startsWith(item.path);
+                  const isLocked = item.path !== '/profile' && !isKycApproved;
+
+                  if (isLocked) {
+                    return (
+                      <div
+                        key={item.name}
+                        className="flex items-center gap-2 px-[12px] py-[6px] rounded-[6px] text-[14px] font-medium text-slate-400 dark:text-slate-600 cursor-not-allowed"
+                        title="Complete your Profile verification to unlock"
+                      >
+                        <Lock className="w-4 h-4" />
+                        {item.name}
+                      </div>
+                    );
+                  }
+
                   return (
                     <Link
                       key={item.name}
@@ -90,6 +108,20 @@ export default function InvestorLayout({ children }: { children: React.ReactNode
               <nav className="flex flex-col gap-2">
                 {navItems.map((item) => {
                   const isActive = pathname.startsWith(item.path);
+                  const isLocked = item.path !== '/profile' && !isKycApproved;
+
+                  if (isLocked) {
+                    return (
+                      <div
+                        key={item.name}
+                        className="flex items-center gap-2 px-[12px] py-[10px] rounded-[6px] text-[16px] font-medium text-slate-400 dark:text-slate-600 cursor-not-allowed"
+                      >
+                        <Lock className="w-4 h-4" />
+                        {item.name}
+                      </div>
+                    );
+                  }
+
                   return (
                     <Link
                       key={item.name}

@@ -186,11 +186,18 @@ export class InvestorsService {
       let requiredTypes: string[] = [];
       
       if (user.role === 'INVESTOR') {
-         requiredTypes = ['IDENTITY', 'TAX_NUMBER', 'ADDRESS', 'PROOF_OF_INCOME'];
-         
+         requiredTypes = ['IDENTITY', 'TAX_NUMBER', 'ADDRESS'];
          const p = user.investorProfile;
-         if (!p || !p.employerName || !p.jobTitle || !p.sourceOfFunds) {
+         if (!p || !p.sourceOfFunds) {
            throw new BadRequestException('Employment and Source of Funds details must be provided before submitting KYC');
+         }
+
+         const empVerif = await (this.prisma as any).employmentVerification.findFirst({
+           where: { investorId: userId, status: { not: 'REJECTED' } }
+         });
+
+         if (!empVerif) {
+           throw new BadRequestException('You must send an Employment Verification request before submitting KYC');
          }
       } else if (user.role === 'BROKER') {
          requiredTypes = ['BROKER_LICENSE', 'IDENTITY'];
@@ -328,6 +335,11 @@ export class InvestorsService {
       where: { id: userId },
       include: {
         investorProfile: true,
+        employmentVerifications: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+          include: { auditLogs: { orderBy: { createdAt: 'desc' } } }
+        }
       },
     });
 
@@ -343,6 +355,7 @@ export class InvestorsService {
     return {
       profile: { ...(user.investorProfile || {}), kycStatus: user.kycStatus, user },
       documents,
+      employmentVerification: user.employmentVerifications?.[0] || null,
     };
   }
 

@@ -26,6 +26,7 @@ interface AuthContextType {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   login: (data: any, redirect?: boolean) => void;
   logout: () => void;
+  updateUser: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,13 +38,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Check if user is logged in on mount
-    const loadUser = () => {
+    const loadUser = async () => {
       const storedUser = localStorage.getItem("user");
       const token = localStorage.getItem("accessToken");
 
       if (storedUser && token) {
         try {
           setUser(JSON.parse(storedUser));
+          // Fetch latest user data silently in background
+          api.get("/auth/me").then(res => {
+            if (res.data) {
+              localStorage.setItem("user", JSON.stringify(res.data));
+              setUser(res.data);
+            }
+          }).catch(err => console.error("Failed to refresh user", err));
         } catch {
           localStorage.removeItem("user");
         }
@@ -96,8 +104,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateUser = (updatedUser: User) => {
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    setUser(updatedUser);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

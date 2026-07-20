@@ -121,4 +121,16 @@ export class AuthService {
       user: userInfo,
     };
   }
+
+  async getMe(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        investorProfile: true,
+      },
+    });
+    if (!user) throw new UnauthorizedException('User not found');
+    const { passwordHash: _, ...result } = user;
+    return result;
+  }
 }

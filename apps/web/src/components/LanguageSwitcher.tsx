@@ -27,11 +27,8 @@ export default function LanguageSwitcher() {
     document.cookie = `NEXT_LOCALE=${nextLocale}; path=/; max-age=31536000; SameSite=Lax`;
     
     startTransition(() => {
-      router.replace(
-        // @ts-expect-error - next-intl dynamic route types
-        { pathname, params },
-        { locale: nextLocale }
-      );
+      // Pass pathname as a string, next-intl will automatically handle the locale prefix
+      router.replace(pathname as any, { locale: nextLocale });
     });
   };
 

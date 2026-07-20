@@ -6,9 +6,11 @@ import { api } from '@/lib/api';
 import { CheckCircle, Clock, AlertCircle, FileText, UploadCloud, Download, ShieldCheck, FileCheck2, UserCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function InvestorProfilePage() {
   const t = useTranslations("InvestorProfile");
+  const { user, updateUser } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [documents, setDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,8 +21,14 @@ export default function InvestorProfilePage() {
   const [fetchError, setFetchError] = useState<string | null>(null);
   
   const [employerName, setEmployerName] = useState('');
+  const [contactName, setContactName] = useState('');
+  const [employerEmail, setEmployerEmail] = useState('');
   const [jobTitle, setJobTitle] = useState('');
+  const [department, setDepartment] = useState('');
+  const [employeeId, setEmployeeId] = useState('');
   const [sourceOfFunds, setSourceOfFunds] = useState('');
+  const [verification, setVerification] = useState<any>(null);
+  const [submittingVerification, setSubmittingVerification] = useState(false);
   const hasInitializedForms = useRef(false);
 
   useEffect(() => {
@@ -32,12 +40,25 @@ export default function InvestorProfilePage() {
   const fetchData = async () => {
     try {
       setFetchError(null);
-      const [profileRes, docsRes] = await Promise.all([
+      const [profileRes, docsRes, verifRes] = await Promise.all([
         api.get('/investors/profile'),
         api.get('/investors/documents'),
+        api.get('/investors/employment-verification').catch(() => ({ data: null })),
       ]);
       setProfile(profileRes.data);
       setDocuments(docsRes.data);
+      if (verifRes?.data) {
+        setVerification(verifRes.data);
+      }
+
+      // Update global auth context if KYC status changed
+      if (profileRes.data && user) {
+        const newKycStatus = profileRes.data.kycStatus;
+        const currentKycStatus = user.investorProfile?.kycStatus || user.kycStatus;
+        if (newKycStatus && newKycStatus !== currentKycStatus) {
+          updateUser({ ...user, kycStatus: newKycStatus, investorProfile: { ...user.investorProfile, kycStatus: newKycStatus } as any });
+        }
+      }
       
       if (profileRes.data && !hasInitializedForms.current) {
         setEmployerName(profileRes.data.employerName || '');
@@ -81,8 +102,8 @@ export default function InvestorProfilePage() {
       );
       
       await api.patch('/investors/profile', {
-        employerName,
-        jobTitle,
+        employerName: employerName || verification?.employerName || '',
+        jobTitle: jobTitle || verification?.jobTitle || '',
         sourceOfFunds,
         dateOfBirth: profile?.dateOfBirth || "1990-01-01",
         nationality: profile?.nationality || "Mozambique",
@@ -134,10 +155,12 @@ export default function InvestorProfilePage() {
   const hasIdentity = documents.some(d => d.documentType === 'IDENTITY') || !!selectedFiles['IDENTITY'];
   const hasTaxNumber = documents.some(d => d.documentType === 'TAX_NUMBER') || !!selectedFiles['TAX_NUMBER'];
   const hasAddress = documents.some(d => d.documentType === 'ADDRESS') || !!selectedFiles['ADDRESS'];
-  const hasProofOfIncome = documents.some(d => d.documentType === 'PROOF_OF_INCOME') || !!selectedFiles['PROOF_OF_INCOME'];
+  
+  // Note: Proof of income is now verified via employer workflow.
 
-  const selectedCount = (hasIdentity ? 1 : 0) + (hasTaxNumber ? 1 : 0) + (hasAddress ? 1 : 0) + (hasProofOfIncome ? 1 : 0);
-  const allUploaded = selectedCount === 4 && employerName.trim() !== '' && jobTitle.trim() !== '' && sourceOfFunds.trim() !== '';
+  const selectedCount = (hasIdentity ? 1 : 0) + (hasTaxNumber ? 1 : 0) + (hasAddress ? 1 : 0);
+  const isVerificationReady = verification && ['REQUEST_SENT', 'PENDING_REVIEW', 'APPROVED'].includes(verification.status);
+  const allUploaded = selectedCount === 3 && sourceOfFunds.trim() !== '' && isVerificationReady;
 
   if (loading) {
     return (
@@ -222,41 +245,78 @@ export default function InvestorProfilePage() {
             )}
           </div>
           
-          {/* Employment Details Form */}
+          {/* Employment Verification Details Form */}
           <div className="bg-white dark:bg-ink-deep rounded-2xl border border-[#e5e7eb] dark:border-hairline-violet p-6 md:p-8 shadow-sm flex flex-col mt-4">
             <h3 className="text-[18px] font-bold text-[#1f1633] dark:text-white mb-4">
               {t('employmentDetailsTitle')}
             </h3>
-            <p className="text-[14px] text-[#79628c] dark:text-on-dark-muted mb-6">
-              {t('employmentDetailsDesc')}
-            </p>
+            
+            {verification ? (
+              <div className="p-4 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50 rounded-xl mb-4">
+                <p className="font-bold mb-1 uppercase tracking-wider text-[11px] flex items-center gap-1"><ShieldCheck size={14} /> Verification Status</p>
+                <p className="text-[14px] font-medium">Your employment verification request has been sent to {verification.employerEmail}.</p>
+                <p className="text-[13px] opacity-80 mt-1">Status: {verification.status.replace('_', ' ')}</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-[13px] text-[#79628c] dark:text-on-dark-muted mb-4">
+                  We need to verify your employment. Enter your employer's details and we will securely email them to request proof of income.
+                </p>
+                <div>
+                  <label className="block text-[13px] font-bold text-[#1f1633] dark:text-white mb-2 uppercase tracking-wide">Employer Name *</label>
+                  <input type="text" value={employerName} onChange={e => setEmployerName(e.target.value)} disabled={['DOCUMENTS_SUBMITTED', 'APPROVED'].includes(profile?.kycStatus)} className="w-full bg-[#f9fafb] dark:bg-[#1a1130] border border-[#e5e7eb] dark:border-[#362d59] rounded-xl px-4 py-3 text-[#1f1633] dark:text-white text-[14px] focus:outline-none focus:border-[#6a5fc1]" placeholder="e.g. Acme Corp" />
+                </div>
+                <div>
+                  <label className="block text-[13px] font-bold text-[#1f1633] dark:text-white mb-2 uppercase tracking-wide">Contact Name (Optional)</label>
+                  <input type="text" value={contactName} onChange={e => setContactName(e.target.value)} disabled={['DOCUMENTS_SUBMITTED', 'APPROVED'].includes(profile?.kycStatus)} className="w-full bg-[#f9fafb] dark:bg-[#1a1130] border border-[#e5e7eb] dark:border-[#362d59] rounded-xl px-4 py-3 text-[#1f1633] dark:text-white text-[14px] focus:outline-none focus:border-[#6a5fc1]" placeholder="e.g. Jane Doe (HR)" />
+                </div>
+                <div>
+                  <label className="block text-[13px] font-bold text-[#1f1633] dark:text-white mb-2 uppercase tracking-wide">Employer Email *</label>
+                  <input type="email" value={employerEmail} onChange={e => setEmployerEmail(e.target.value)} disabled={['DOCUMENTS_SUBMITTED', 'APPROVED'].includes(profile?.kycStatus)} className="w-full bg-[#f9fafb] dark:bg-[#1a1130] border border-[#e5e7eb] dark:border-[#362d59] rounded-xl px-4 py-3 text-[#1f1633] dark:text-white text-[14px] focus:outline-none focus:border-[#6a5fc1]" placeholder="e.g. hr@acmecorp.com" />
+                </div>
+                <div>
+                  <label className="block text-[13px] font-bold text-[#1f1633] dark:text-white mb-2 uppercase tracking-wide">Your Job Title *</label>
+                  <input type="text" value={jobTitle} onChange={e => setJobTitle(e.target.value)} disabled={['DOCUMENTS_SUBMITTED', 'APPROVED'].includes(profile?.kycStatus)} className="w-full bg-[#f9fafb] dark:bg-[#1a1130] border border-[#e5e7eb] dark:border-[#362d59] rounded-xl px-4 py-3 text-[#1f1633] dark:text-white text-[14px] focus:outline-none focus:border-[#6a5fc1]" placeholder="e.g. Software Engineer" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[13px] font-bold text-[#1f1633] dark:text-white mb-2 uppercase tracking-wide">Department</label>
+                    <input type="text" value={department} onChange={e => setDepartment(e.target.value)} disabled={['DOCUMENTS_SUBMITTED', 'APPROVED'].includes(profile?.kycStatus)} className="w-full bg-[#f9fafb] dark:bg-[#1a1130] border border-[#e5e7eb] dark:border-[#362d59] rounded-xl px-4 py-3 text-[#1f1633] dark:text-white text-[14px] focus:outline-none focus:border-[#6a5fc1]" placeholder="e.g. Engineering" />
+                  </div>
+                  <div>
+                    <label className="block text-[13px] font-bold text-[#1f1633] dark:text-white mb-2 uppercase tracking-wide">Employee ID</label>
+                    <input type="text" value={employeeId} onChange={e => setEmployeeId(e.target.value)} disabled={['DOCUMENTS_SUBMITTED', 'APPROVED'].includes(profile?.kycStatus)} className="w-full bg-[#f9fafb] dark:bg-[#1a1130] border border-[#e5e7eb] dark:border-[#362d59] rounded-xl px-4 py-3 text-[#1f1633] dark:text-white text-[14px] focus:outline-none focus:border-[#6a5fc1]" placeholder="e.g. EMP-1234" />
+                  </div>
+                </div>
+                
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setSubmittingVerification(true);
+                    try {
+                      const res = await api.post('/investors/employment-verification/request', {
+                        employerName, contactName, employerEmail, jobTitle, department, employeeId
+                      });
+                      setVerification(res.data);
+                      // Update to use window.location.origin so it works dynamically in staging/prod before emails are integrated
+                      window.alert(`MVP MODE: Secure link generated. Open this URL as an Employer to test:\n\n${window.location.origin}/en/verify-employment/${res.data.token}`);
+                    } catch (err: any) {
+                      setError(err.response?.data?.message || 'Failed to send request');
+                    } finally {
+                      setSubmittingVerification(false);
+                    }
+                  }}
+                  disabled={!employerName || !employerEmail || !jobTitle || submittingVerification}
+                  className="w-full mt-4 py-3 bg-[#6a5fc1] hover:bg-[#5b51a8] disabled:opacity-50 text-white font-bold rounded-lg transition-colors text-[14px] uppercase tracking-wider"
+                >
+                  {submittingVerification ? 'Sending...' : 'Send Request to Employer'}
+                </button>
+              </div>
+            )}
+            
+            <hr className="border-[#e5e7eb] dark:border-[#362d59] my-6" />
+            
             <div className="space-y-4">
-              <div>
-                <label className="block text-[13px] font-bold text-[#1f1633] dark:text-white mb-2 uppercase tracking-wide">
-                  {t('employerName')} *
-                </label>
-                <input
-                  type="text"
-                  value={employerName}
-                  onChange={(e) => setEmployerName(e.target.value)}
-                  disabled={['DOCUMENTS_SUBMITTED', 'APPROVED'].includes(profile?.kycStatus)}
-                  className="w-full bg-[#f9fafb] dark:bg-[#1a1130] border border-[#e5e7eb] dark:border-[#362d59] rounded-xl px-4 py-3 text-[#1f1633] dark:text-white text-[15px] focus:outline-none focus:border-[#6a5fc1] dark:focus:border-accent-violet transition-colors disabled:opacity-50"
-                  placeholder="e.g. Acme Corp"
-                />
-              </div>
-              <div>
-                <label className="block text-[13px] font-bold text-[#1f1633] dark:text-white mb-2 uppercase tracking-wide">
-                  {t('jobTitle')} *
-                </label>
-                <input
-                  type="text"
-                  value={jobTitle}
-                  onChange={(e) => setJobTitle(e.target.value)}
-                  disabled={['DOCUMENTS_SUBMITTED', 'APPROVED'].includes(profile?.kycStatus)}
-                  className="w-full bg-[#f9fafb] dark:bg-[#1a1130] border border-[#e5e7eb] dark:border-[#362d59] rounded-xl px-4 py-3 text-[#1f1633] dark:text-white text-[15px] focus:outline-none focus:border-[#6a5fc1] dark:focus:border-accent-violet transition-colors disabled:opacity-50"
-                  placeholder="e.g. Software Engineer"
-                />
-              </div>
               <div>
                 <label className="block text-[13px] font-bold text-[#1f1633] dark:text-white mb-2 uppercase tracking-wide">
                   {t('sourceOfFunds')} *
@@ -305,11 +365,6 @@ export default function InvestorProfilePage() {
                 id: 'ADDRESS',
                 label: t('docAddress'),
                 desc: t('docAddressDesc'),
-              },
-              {
-                id: 'PROOF_OF_INCOME',
-                label: t('docProofOfIncome'),
-                desc: t('docProofOfIncomeDesc'),
               },
               {
                 id: 'SOURCE_OF_FUNDS',

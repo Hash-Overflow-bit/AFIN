@@ -770,5 +770,28 @@
     "descAccessDenied": "Você não tem as permissões necessárias para visualizar esta seção da plataforma.",
     "btnGoDashboard": "Ir para Meu Painel",
     "btnLogout": "Sair"
+  },
+  "EmploymentVerification": {
+    "title": "Verificação de Emprego",
+    "desc": "Para cumprir com os regulamentos de KYC, devemos verificar seu emprego. Forneça os detalhes do seu empregador abaixo. Enviaremos um link seguro para que ele envie seu Comprovante de Renda.",
+    "employerName": "Nome do Empregador",
+    "contactName": "Nome do Contato no Empregador (RH/Gerente)",
+    "employerEmail": "E-mail do Empregador",
+    "jobTitle": "Seu Cargo",
+    "department": "Departamento (Opcional)",
+    "employeeId": "ID do Funcionário (Opcional)",
+    "btnSendRequest": "Enviar Solicitação ao Empregador",
+    "statusRequestSent": "Solicitação Enviada ao Empregador",
+    "statusWaiting": "Aguardando Resposta...",
+    "publicTitle": "Verificar Emprego para",
+    "publicDesc": "Seu funcionário solicitou a abertura de uma conta de investimento na AGBX. Por favor, verifique o emprego dele enviando de forma segura um Comprovante de Renda (Holerite) ou uma Carta de Verificação de Emprego.",
+    "uploadLetter": "Enviar Carta de Verificação / Comprovante de Renda",
+    "btnSubmit": "Enviar Documentos",
+    "successMessage": "Obrigado! Os documentos foram enviados de forma segura.",
+    "auditTrail": "Trilha de Auditoria da Verificação",
+    "btnApprove": "Aprovar Verificação",
+    "btnReject": "Rejeitar Verificação",
+    "notesLabel": "Notas da Revisão",
+    "employerDocument": "Documento do Empregador"
   }
 }

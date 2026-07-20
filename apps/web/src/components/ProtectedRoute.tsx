@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 
-export function ProtectedRoute({ children, requiredRoles = [] }: { children: React.ReactNode, requiredRoles?: string[] }) {
+export function ProtectedRoute({ children, requiredRoles = [], enforceKyc = false }: { children: React.ReactNode, requiredRoles?: string[], enforceKyc?: boolean }) {
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -19,9 +19,14 @@ export function ProtectedRoute({ children, requiredRoles = [] }: { children: Rea
       } else if (user && user.role === 'BROKER' && user.status === 'PENDING' && pathname !== '/broker/onboarding') {
         // Force pending brokers to onboarding page
         router.push("/broker/onboarding");
+      } else if (enforceKyc && user && user.role === 'INVESTOR') {
+        const kycStatus = user.investorProfile?.kycStatus || user.kycStatus;
+        if (kycStatus !== 'APPROVED' && !pathname.includes('/profile')) {
+          router.push("/profile");
+        }
       }
     }
-  }, [isLoading, isAuthenticated, user, router, requiredRoles, pathname]);
+  }, [isLoading, isAuthenticated, user, router, requiredRoles, pathname, enforceKyc]);
 
   if (isLoading || !isAuthenticated) {
     return (

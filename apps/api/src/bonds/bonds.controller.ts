@@ -16,6 +16,7 @@ import { BondQueryDto } from './dto/bond-query.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { KycGuard } from '../auth/guards/kyc-approved.guard';
 
 /**
  * Public bonds controller — no authentication required.
@@ -31,7 +32,7 @@ export class BondsPublicController {
   }
 }
 
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard, KycGuard)
 @Controller('bonds')
 export class BondsController {
   constructor(private readonly bondsService: BondsService) {}

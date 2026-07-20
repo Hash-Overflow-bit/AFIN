@@ -769,6 +769,29 @@
     "titleAccessDenied": "Access Denied",
     "descAccessDenied": "You do not have the required permissions to view this section of the platform.",
     "btnGoDashboard": "Go to My Dashboard",
-    "btnLogout": "Log Out"
+    "btnLogout": "Sign Out"
+  },
+  "EmploymentVerification": {
+    "title": "Employment Verification",
+    "desc": "To comply with KYC regulations, we must verify your employment. Please provide your employer's details below. We will send them a secure link to upload your Proof of Income.",
+    "employerName": "Employer Name",
+    "contactName": "Employer Contact Name (HR/Manager)",
+    "employerEmail": "Employer Email Address",
+    "jobTitle": "Your Job Title",
+    "department": "Department (Optional)",
+    "employeeId": "Employee ID (Optional)",
+    "btnSendRequest": "Send Request to Employer",
+    "statusRequestSent": "Request Sent to Employer",
+    "statusWaiting": "Waiting for Response...",
+    "publicTitle": "Verify Employment for",
+    "publicDesc": "Your employee has requested to open an investment account on AGBX. Please verify their employment by securely uploading a Proof of Income (Pay Slip) or an Employment Verification Letter.",
+    "uploadLetter": "Upload Verification Letter / Proof of Income",
+    "btnSubmit": "Submit Documents",
+    "successMessage": "Thank you! The documents have been securely uploaded.",
+    "auditTrail": "Verification Audit Trail",
+    "btnApprove": "Approve Verification",
+    "btnReject": "Reject Verification",
+    "notesLabel": "Review Notes",
+    "employerDocument": "Employer Document"
   }
 }

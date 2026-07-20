@@ -39,6 +39,8 @@ model User {
   verifiedPayments Payment[]          @relation("PaymentsVerifiedBy")
   portfolio        PortfolioHolding[]
   refreshTokens    RefreshToken[]
+  employmentVerifications EmploymentVerification[] @relation("EmploymentVerificationsByInvestor")
+  reviewedVerifications   EmploymentVerification[] @relation("EmploymentVerificationsReviewedBy")
 
   @@index([email], map: "idx_users_email")
   @@index([role], map: "idx_users_role")
@@ -271,4 +273,43 @@ model RefreshToken {
 
   @@index([token], map: "idx_refresh_token")
   @@map("refresh_tokens")
+}
+
+model EmploymentVerification {
+  id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  investorId      String    @map("investor_id") @db.Uuid
+  employerName    String    @map("employer_name") @db.VarChar(255)
+  contactName     String?   @map("contact_name") @db.VarChar(255)
+  employerEmail   String    @map("employer_email") @db.VarChar(255)
+  jobTitle        String    @map("job_title") @db.VarChar(100)
+  department      String?   @db.VarChar(100)
+  employeeId      String?   @map("employee_id") @db.VarChar(100)
+  status          String    @default("REQUEST_SENT") @db.VarChar(50)
+  token           String    @unique @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  documentPath    String?   @map("document_path") @db.VarChar(500)
+  documentName    String?   @map("document_name") @db.VarChar(255)
+  rejectionReason String?   @map("rejection_reason")
+  reviewedBy      String?   @map("reviewed_by") @db.Uuid
+  reviewedAt      DateTime? @map("reviewed_at") @db.Timestamptz(6)
+  createdAt       DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime? @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  investor User  @relation("EmploymentVerificationsByInvestor", fields: [investorId], references: [id])
+  reviewer User? @relation("EmploymentVerificationsReviewedBy", fields: [reviewedBy], references: [id])
+  auditLogs VerificationAuditLog[]
+
+  @@map("employment_verifications")
+}
+
+model VerificationAuditLog {
+  id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  verificationId   String    @map("verification_id") @db.Uuid
+  action           String    @db.VarChar(50)
+  actorId          String?   @map("actor_id") @db.Uuid
+  notes            String?
+  createdAt        DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  verification EmploymentVerification @relation(fields: [verificationId], references: [id], onDelete: Cascade)
+
+  @@map("verification_audit_logs")
 }

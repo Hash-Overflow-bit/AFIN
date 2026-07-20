@@ -32,17 +32,41 @@ export default function RegisterPage() {
   const { login } = useAuth();
   const [selectedFiles, setSelectedFiles] = useState<Record<string, File>>({});
 
-  // Parse initial role from URL
+  // Hydrate state from sessionStorage and Parse initial role from URL
   useEffect(() => {
     if (typeof window !== "undefined") {
+      const savedStep = sessionStorage.getItem('register_step');
+      const savedRole = sessionStorage.getItem('register_role');
+      const savedFormData = sessionStorage.getItem('register_formData');
+
+      if (savedFormData) setFormData(JSON.parse(savedFormData));
+      if (savedRole) setRole(savedRole as 'INVESTOR' | 'BROKER');
+      if (savedStep) setStep(savedStep as Step);
+
+      // URL param overrides session storage for starting fresh
       const searchParams = new URLSearchParams(window.location.search);
       const roleParam = searchParams.get("role");
-      if (roleParam === "BROKER" || roleParam === "INVESTOR") {
+      if ((roleParam === "BROKER" || roleParam === "INVESTOR") && !savedStep) {
         setRole(roleParam as "INVESTOR" | "BROKER");
         setStep("NAME");
       }
     }
   }, []);
+
+  // Save state to sessionStorage whenever it changes, clear on SUCCESS
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      if (step === 'SUCCESS') {
+        sessionStorage.removeItem('register_step');
+        sessionStorage.removeItem('register_role');
+        sessionStorage.removeItem('register_formData');
+      } else {
+        sessionStorage.setItem('register_step', step);
+        sessionStorage.setItem('register_role', role);
+        sessionStorage.setItem('register_formData', JSON.stringify(formData));
+      }
+    }
+  }, [step, role, formData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -112,7 +136,11 @@ export default function RegisterPage() {
       await Promise.all(
         Object.entries(selectedFiles).map(([docType, file]) => handleFileUpload(file, docType))
       );
-      await api.post('/investors/submit-kyc');
+      
+      if (role === 'BROKER') {
+        await api.post('/investors/submit-kyc');
+      }
+      
       nextStep('SUCCESS');
     } catch (err: any) {
       setError(err.response?.data?.message || t('failedToUploadDocs'));
@@ -447,7 +475,7 @@ export default function RegisterPage() {
                 <CheckCircle2 className="w-20 h-20 text-accent-lime mx-auto mb-6" />
                 <h1 className="font-display text-4xl font-bold mb-4">{t('applicationSubmitted')}</h1>
                 <p className="text-on-dark-muted mb-8 text-base max-w-sm mx-auto leading-relaxed">
-                  {role === 'BROKER' ? t('brokerSuccessMsg') : t('investorSuccessMsg')}
+                  {role === 'BROKER' ? t('brokerSuccessMsg') : "Account Created! Please proceed to your dashboard to complete your Employment Verification and finalize your KYC submission."}
                 </p>
                 <Link href="/login" className="btn-inverted w-full inline-flex justify-center py-4 bg-white text-black font-bold rounded-full hover:bg-slate-100 transition-colors text-lg">
                   {t('proceedToLogin')}

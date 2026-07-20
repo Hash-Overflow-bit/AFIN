@@ -13,6 +13,7 @@ import { PortfolioModule } from './portfolio/portfolio.module';
 import { QueueModule } from './queue/queue.module';
 import { ReportsModule } from './reports/reports.module';
 import { AdminModule } from './admin/admin.module';
+import { EmploymentVerificationModule } from './employment-verification/employment-verification.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { AdminModule } from './admin/admin.module';
     PortfolioModule,
     ReportsModule,
     AdminModule,
+    EmploymentVerificationModule,
   ],
   controllers: [],
   providers: [
