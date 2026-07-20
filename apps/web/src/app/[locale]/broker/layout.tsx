@@ -15,7 +15,7 @@ export default function BrokerLayout({ children }: { children: React.ReactNode }
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const t = useTranslations("Navigation");
 
-  if (pathname === '/broker/onboarding') {
+  if (pathname.includes('/broker/onboarding')) {
     return (
       <ProtectedRoute requiredRoles={['BROKER', 'BROKER_MANAGER', 'BROKER_ANALYST']}>
         {children}

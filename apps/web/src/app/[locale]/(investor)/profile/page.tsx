@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { FileUpload } from '@/components/ui/FileUpload';
 import { api } from '@/lib/api';
 import { CheckCircle, Clock, AlertCircle, FileText, UploadCloud, Download, ShieldCheck, FileCheck2, UserCircle } from 'lucide-react';
@@ -17,6 +17,11 @@ export default function InvestorProfilePage() {
   const [selectedFiles, setSelectedFiles] = useState<Record<string, File>>({});
   const [submittingKyc, setSubmittingKyc] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  
+  const [employerName, setEmployerName] = useState('');
+  const [jobTitle, setJobTitle] = useState('');
+  const [sourceOfFunds, setSourceOfFunds] = useState('');
+  const hasInitializedForms = useRef(false);
 
   useEffect(() => {
     fetchData();
@@ -33,6 +38,13 @@ export default function InvestorProfilePage() {
       ]);
       setProfile(profileRes.data);
       setDocuments(docsRes.data);
+      
+      if (profileRes.data && !hasInitializedForms.current) {
+        setEmployerName(profileRes.data.employerName || '');
+        setJobTitle(profileRes.data.jobTitle || '');
+        setSourceOfFunds(profileRes.data.sourceOfFunds || '');
+        hasInitializedForms.current = true;
+      }
     } catch (error: any) {
       console.error('Failed to fetch profile data', error);
       setFetchError(error?.response?.data?.message || error?.message || 'Unknown network error');
@@ -67,6 +79,19 @@ export default function InvestorProfilePage() {
       await Promise.all(
         Object.entries(selectedFiles).map(([docType, file]) => handleFileUpload(file, docType))
       );
+      
+      await api.patch('/investors/profile', {
+        employerName,
+        jobTitle,
+        sourceOfFunds,
+        dateOfBirth: profile?.dateOfBirth || "1990-01-01",
+        nationality: profile?.nationality || "Mozambique",
+        taxId: profile?.taxId || "123456789",
+        addressLine1: profile?.addressLine1 || "Maputo",
+        city: profile?.city || "Maputo",
+        country: profile?.country || "Mozambique"
+      });
+
       const res = await api.post('/investors/submit-kyc');
       setProfile(res.data);
       setSelectedFiles({});
@@ -109,9 +134,10 @@ export default function InvestorProfilePage() {
   const hasIdentity = documents.some(d => d.documentType === 'IDENTITY') || !!selectedFiles['IDENTITY'];
   const hasTaxNumber = documents.some(d => d.documentType === 'TAX_NUMBER') || !!selectedFiles['TAX_NUMBER'];
   const hasAddress = documents.some(d => d.documentType === 'ADDRESS') || !!selectedFiles['ADDRESS'];
+  const hasProofOfIncome = documents.some(d => d.documentType === 'PROOF_OF_INCOME') || !!selectedFiles['PROOF_OF_INCOME'];
 
-  const selectedCount = (hasIdentity ? 1 : 0) + (hasTaxNumber ? 1 : 0) + (hasAddress ? 1 : 0);
-  const allUploaded = selectedCount === 3;
+  const selectedCount = (hasIdentity ? 1 : 0) + (hasTaxNumber ? 1 : 0) + (hasAddress ? 1 : 0) + (hasProofOfIncome ? 1 : 0);
+  const allUploaded = selectedCount === 4 && employerName.trim() !== '' && jobTitle.trim() !== '' && sourceOfFunds.trim() !== '';
 
   if (loading) {
     return (
@@ -195,6 +221,57 @@ export default function InvestorProfilePage() {
               </p>
             )}
           </div>
+          
+          {/* Employment Details Form */}
+          <div className="bg-white dark:bg-ink-deep rounded-2xl border border-[#e5e7eb] dark:border-hairline-violet p-6 md:p-8 shadow-sm flex flex-col mt-4">
+            <h3 className="text-[18px] font-bold text-[#1f1633] dark:text-white mb-4">
+              {t('employmentDetailsTitle')}
+            </h3>
+            <p className="text-[14px] text-[#79628c] dark:text-on-dark-muted mb-6">
+              {t('employmentDetailsDesc')}
+            </p>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[13px] font-bold text-[#1f1633] dark:text-white mb-2 uppercase tracking-wide">
+                  {t('employerName')} *
+                </label>
+                <input
+                  type="text"
+                  value={employerName}
+                  onChange={(e) => setEmployerName(e.target.value)}
+                  disabled={['DOCUMENTS_SUBMITTED', 'APPROVED'].includes(profile?.kycStatus)}
+                  className="w-full bg-[#f9fafb] dark:bg-[#1a1130] border border-[#e5e7eb] dark:border-[#362d59] rounded-xl px-4 py-3 text-[#1f1633] dark:text-white text-[15px] focus:outline-none focus:border-[#6a5fc1] dark:focus:border-accent-violet transition-colors disabled:opacity-50"
+                  placeholder="e.g. Acme Corp"
+                />
+              </div>
+              <div>
+                <label className="block text-[13px] font-bold text-[#1f1633] dark:text-white mb-2 uppercase tracking-wide">
+                  {t('jobTitle')} *
+                </label>
+                <input
+                  type="text"
+                  value={jobTitle}
+                  onChange={(e) => setJobTitle(e.target.value)}
+                  disabled={['DOCUMENTS_SUBMITTED', 'APPROVED'].includes(profile?.kycStatus)}
+                  className="w-full bg-[#f9fafb] dark:bg-[#1a1130] border border-[#e5e7eb] dark:border-[#362d59] rounded-xl px-4 py-3 text-[#1f1633] dark:text-white text-[15px] focus:outline-none focus:border-[#6a5fc1] dark:focus:border-accent-violet transition-colors disabled:opacity-50"
+                  placeholder="e.g. Software Engineer"
+                />
+              </div>
+              <div>
+                <label className="block text-[13px] font-bold text-[#1f1633] dark:text-white mb-2 uppercase tracking-wide">
+                  {t('sourceOfFunds')} *
+                </label>
+                <input
+                  type="text"
+                  value={sourceOfFunds}
+                  onChange={(e) => setSourceOfFunds(e.target.value)}
+                  disabled={['DOCUMENTS_SUBMITTED', 'APPROVED'].includes(profile?.kycStatus)}
+                  className="w-full bg-[#f9fafb] dark:bg-[#1a1130] border border-[#e5e7eb] dark:border-[#362d59] rounded-xl px-4 py-3 text-[#1f1633] dark:text-white text-[15px] focus:outline-none focus:border-[#6a5fc1] dark:focus:border-accent-violet transition-colors disabled:opacity-50"
+                  placeholder={t('sourceOfFundsPlaceholder')}
+                />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Right Column (65%) - Documents */}
@@ -228,6 +305,16 @@ export default function InvestorProfilePage() {
                 id: 'ADDRESS',
                 label: t('docAddress'),
                 desc: t('docAddressDesc'),
+              },
+              {
+                id: 'PROOF_OF_INCOME',
+                label: t('docProofOfIncome'),
+                desc: t('docProofOfIncomeDesc'),
+              },
+              {
+                id: 'SOURCE_OF_FUNDS',
+                label: t('docSourceOfFunds'),
+                desc: t('docSourceOfFundsDesc'),
               },
             ].map((req) => {
               const doc = getLatestDocForType(req.id);
@@ -345,11 +432,11 @@ export default function InvestorProfilePage() {
               </p>
             ) : allUploaded ? (
               <p className="text-[14px] text-emerald-700 dark:text-emerald-400 font-bold mb-5 text-center flex items-center gap-2">
-                <CheckCircle size={16} /> All required documents are ready for submission.
+                <CheckCircle size={16} /> All required documents and details are ready for submission.
               </p>
             ) : (
               <p className="text-[14px] text-red-600 dark:text-red-400 font-medium mb-5 text-center">
-                Please upload all three required documents above to submit for review.
+                Please upload all required documents and fill employment details above to submit for review.
               </p>
             )}
             <button
@@ -362,7 +449,7 @@ export default function InvestorProfilePage() {
               {submittingKyc ? t('btnSubmitting') :
                 ['DOCUMENTS_SUBMITTED', 'APPROVED'].includes(profile?.kycStatus) ? t('btnSubmitted') :
                   !profile ? 'Error: Profile is null' :
-                    !allUploaded ? t('btnUploadMore', { count: 3 - selectedCount }) :
+                    !allUploaded ? "Please complete all fields and required documents" :
                       t('btnSubmit')}
             </button>
           </div>

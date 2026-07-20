@@ -113,7 +113,7 @@ export default function BrokerDashboardPage() {
             href="/broker/bonds/create"
             className="px-4 py-2 bg-[#6a5fc1] hover:bg-[#5b51a8] dark:bg-accent-lime dark:hover:bg-[#a6d120] text-white dark:text-[#1f1633] text-sm font-semibold rounded-lg shadow-sm transition-colors"
           >
-            + {t('navBonds')}
+            + {t('navIssueBond')}
           </Link>
         </div>
       </div>

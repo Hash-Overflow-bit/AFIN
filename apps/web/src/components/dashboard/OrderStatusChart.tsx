@@ -70,7 +70,7 @@ export function OrderStatusChart({ data }: OrderStatusChartProps) {
         </div>
         <p className="text-[#79628c] dark:text-on-dark-muted text-sm mt-1">{t('pipelineSubtitle')}</p>
       </div>
-      <div className="flex-1 w-full min-h-[320px] relative">
+      <div className="flex-1 w-full min-h-[380px] relative">
         {/* Centered Total Label inside Donut */}
         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none" style={{ paddingBottom: '36px' }}>
           <span className="text-3xl font-bold text-[#1f1633] dark:text-white">{totalOrders.toLocaleString()}</span>
@@ -112,7 +112,7 @@ export function OrderStatusChart({ data }: OrderStatusChartProps) {
             />
             <Legend 
               verticalAlign="bottom" 
-              height={36} 
+              height={72} 
               iconType="circle"
               wrapperStyle={{ fontSize: '12px', color: isDark ? 'rgba(255,255,255,0.72)' : '#79628c', paddingTop: '20px' }}
             />

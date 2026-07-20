@@ -130,6 +130,16 @@ export default function InvestorReviewPage({ params }: { params: { id: string } 
                 <br />{profile.city}, {profile.country} {profile.postalCode}
               </dd>
             </div>
+            <div>
+              <dt className="text-[12px] uppercase tracking-wider text-ink/50 font-bold mb-1">Employment</dt>
+              <dd className="text-[16px] font-medium">
+                {profile.employerName || t('txtNA')} ({profile.jobTitle || t('txtNA')})
+              </dd>
+            </div>
+            <div>
+              <dt className="text-[12px] uppercase tracking-wider text-ink/50 font-bold mb-1">Source of Funds</dt>
+              <dd className="text-[16px] font-medium">{profile.sourceOfFunds || t('txtNA')}</dd>
+            </div>
           </dl>
         </div>
 
@@ -148,7 +158,9 @@ export default function InvestorReviewPage({ params }: { params: { id: string } 
                     <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-surface-press text-ink/75 flex-shrink-0">
                       {doc.documentType === 'IDENTITY' ? t('docTypeIdentity') :
                        doc.documentType === 'TAX_NUMBER' ? t('docTypeNuit') :
-                       doc.documentType === 'ADDRESS' ? t('docTypeAddress') : doc.documentType}
+                       doc.documentType === 'ADDRESS' ? t('docTypeAddress') : 
+                       doc.documentType === 'PROOF_OF_INCOME' ? 'Proof of Income' :
+                       doc.documentType === 'SOURCE_OF_FUNDS' ? 'Source of Funds' : doc.documentType}
                     </span>
                   </div>
                   <span className="text-[12px] text-ink/60 mb-3">

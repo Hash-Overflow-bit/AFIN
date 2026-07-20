@@ -59,6 +59,9 @@ export class InvestorsService {
       const addressLine1 = dto.addressLine1 ?? currentProfile.addressLine1;
       const city = dto.city ?? currentProfile.city;
       const country = dto.country ?? currentProfile.country;
+      const employerName = dto.employerName ?? currentProfile.employerName;
+      const jobTitle = dto.jobTitle ?? currentProfile.jobTitle;
+      const sourceOfFunds = dto.sourceOfFunds ?? currentProfile.sourceOfFunds;
 
       const isProfileComplete = Boolean(
         dateOfBirth &&
@@ -66,7 +69,10 @@ export class InvestorsService {
         taxId &&
         addressLine1 &&
         city &&
-        country
+        country &&
+        employerName &&
+        jobTitle &&
+        sourceOfFunds
       );
 
       let newKycStatus = currentProfile.user.kycStatus;
@@ -85,6 +91,9 @@ export class InvestorsService {
           city: dto.city,
           country: dto.country,
           postalCode: dto.postalCode,
+          employerName: dto.employerName,
+          jobTitle: dto.jobTitle,
+          sourceOfFunds: dto.sourceOfFunds,
         },
       });
 
@@ -158,6 +167,7 @@ export class InvestorsService {
     try {
       const user = await (this.prisma as any).user.findUnique({
         where: { id: userId },
+        include: { investorProfile: true },
       });
 
       if (!user) {
@@ -176,7 +186,12 @@ export class InvestorsService {
       let requiredTypes: string[] = [];
       
       if (user.role === 'INVESTOR') {
-         requiredTypes = ['IDENTITY', 'TAX_NUMBER', 'ADDRESS'];
+         requiredTypes = ['IDENTITY', 'TAX_NUMBER', 'ADDRESS', 'PROOF_OF_INCOME'];
+         
+         const p = user.investorProfile;
+         if (!p || !p.employerName || !p.jobTitle || !p.sourceOfFunds) {
+           throw new BadRequestException('Employment and Source of Funds details must be provided before submitting KYC');
+         }
       } else if (user.role === 'BROKER') {
          requiredTypes = ['BROKER_LICENSE', 'IDENTITY'];
       }

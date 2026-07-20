@@ -32,4 +32,16 @@ export class UpdateProfileDto {
   @IsString()
   @IsOptional()
   postalCode?: string;
+
+  @IsString()
+  @IsOptional()
+  employerName?: string;
+
+  @IsString()
+  @IsOptional()
+  jobTitle?: string;
+
+  @IsString()
+  @IsOptional()
+  sourceOfFunds?: string;
 }
