@@ -112,9 +112,9 @@ export default function InvestorReviewPage({ params }: { params: { id: string } 
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="text-[30px] font-medium text-ink leading-[1.2]">
-            {user.firstName} {user.lastName}
+            {user.role === 'BROKER' ? 'Broker Profile' : 'Investor Profile'}
           </h2>
-          <p className="text-[16px] text-ink/70 mt-1">{user.email}</p>
+          <p className="text-[16px] text-ink/70 mt-1">Reviewing KYC application for {user.firstName} {user.lastName}</p>
         </div>
         <div>
           <span className={`inline-flex items-center px-4 py-2 rounded-[8px] font-bold text-[14px] ${
@@ -155,16 +155,20 @@ export default function InvestorReviewPage({ params }: { params: { id: string } 
                 <br />{profile.city}, {profile.country} {profile.postalCode}
               </dd>
             </div>
-            <div>
-              <dt className="text-[12px] uppercase tracking-wider text-ink/50 font-bold mb-1">Employment</dt>
-              <dd className="text-[16px] font-medium">
-                {profile.employerName || t('txtNA')} ({profile.jobTitle || t('txtNA')})
-              </dd>
-            </div>
-            <div>
-              <dt className="text-[12px] uppercase tracking-wider text-ink/50 font-bold mb-1">Source of Funds</dt>
-              <dd className="text-[16px] font-medium">{profile.sourceOfFunds || t('txtNA')}</dd>
-            </div>
+            {user.role !== 'BROKER' && (
+              <>
+                <div>
+                  <dt className="text-[12px] uppercase tracking-wider text-ink/50 font-bold mb-1">Employment</dt>
+                  <dd className="text-[16px] font-medium">
+                    {profile.employerName || t('txtNA')} ({profile.jobTitle || t('txtNA')})
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[12px] uppercase tracking-wider text-ink/50 font-bold mb-1">Source of Funds</dt>
+                  <dd className="text-[16px] font-medium">{profile.sourceOfFunds || t('txtNA')}</dd>
+                </div>
+              </>
+            )}
           </dl>
         </div>
 
@@ -205,7 +209,7 @@ export default function InvestorReviewPage({ params }: { params: { id: string } 
       </div>
 
       {/* Employment Verification Module */}
-      {employmentVerification && (
+      {user.role !== 'BROKER' && employmentVerification && (
         <div className="bg-surface-canvas-light border border-hairline-cloud rounded-[12px] p-[32px] mb-8">
           <h3 className="text-[20px] font-semibold mb-6 flex items-center justify-between">
             Employment Verification
